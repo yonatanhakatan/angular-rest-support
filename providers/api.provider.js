@@ -55,11 +55,32 @@
             return factory;
 
             /**
+             * Appends the default response transformations
+             * to the new response transformation
+             * @param  {Array|Function} defaults The default response transformation(s)
+             * @param  {Function} transform The new response transformation
+             * @return {Array}
+             */
+            function appendDefaultResponseTransform(defaults, transform) {
+                // We can't guarantee that the default transformation is an array
+                defaults = angular.isArray(defaults) ? defaults : [defaults];
+                // Append the new transformation to the defaults
+                return defaults.concat(transform);
+            }
+
+            /**
              * Perform the HTTP request via Angular $http
              * @return {Object} Promise object
              */
             function performRequest() {
-                return $http[this.httpMethod](this.fullUrl, {});
+                var requestObj = this;
+                return $http({
+                    method: requestObj.httpMethod.toUpperCase(),
+                    transformResponse: appendDefaultResponseTransform($http.defaults.transformResponse, function(value) {
+                        return requestObj.responseTransformer ? requestObj.responseTransformer.transform(value) : value;
+                    }),
+                    url: requestObj.fullUrl
+                });
             }
 
             /**
@@ -73,7 +94,8 @@
                 return {
                     httpMethod: httpMethod,
                     fullUrl: getBaseUrl() + relativeUrl,
-                    request: performRequest
+                    request: performRequest,
+                    setResponseTransformer: setResponseTransformer
                 };
             }
 
@@ -84,6 +106,17 @@
              */
             function prepareGetRequest(relativeUrl) {
                 return prepareApiRequest(relativeUrl, "get");
+            }
+
+            /**
+             * Sets the response transformer for the request
+             * Note: The response transformer MUST have a method
+             * named 'transform' defined to handle the transformation
+             * @return {Object} The request object
+             */
+            function setResponseTransformer(responseTransformer) {
+                this.responseTransformer = responseTransformer;
+                return this;
             }
 
         }
