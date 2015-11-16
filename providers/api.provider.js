@@ -5,11 +5,13 @@
         .module('api')
         .provider('apiHelper', apiHelperProvider);
 
+    apiHelperProvider.$inject = ['$httpProvider'];
+
     /**
      * An API Helper that allows you to make
      * requests to REST API's.
      */
-    function apiHelperProvider() {
+    function apiHelperProvider($httpProvider) {
         /* jshint validthis:true */
 
         var config = {
@@ -19,25 +21,9 @@
         assignGlobalMethods(this);
 
         this.$get = apiHelperFactory;
+        this.setHeaders = setHeaders;
 
         apiHelperFactory.$inject = ['$http'];
-
-        /**
-         * Assigns the global methods to the given contextObj.
-         * This is useful for methods that need to be available
-         * at the config and run stages.
-         * @param  {Object} contextObj The object to be used as the context object
-         */
-        function assignGlobalMethods(contextObj) {
-            var globalMethods = {
-                getBaseUrl: getBaseUrl,
-                setBaseUrl: setBaseUrl
-            };
-
-            for(var key in globalMethods) {
-                contextObj[key] = globalMethods[key];
-            }
-        }
 
         /**
          * Helper factory which is run at run stage
@@ -47,7 +33,8 @@
          */
         function apiHelperFactory($http) {
             var factory = {
-                get: prepareGetRequest
+                get: prepareGetRequest,
+                post: preparePostRequest,
             };
 
             assignGlobalMethods(factory);
@@ -74,13 +61,21 @@
              */
             function performRequest() {
                 var requestObj = this;
-                return $http({
+                var httpConfig = {
                     method: requestObj.httpMethod.toUpperCase(),
                     transformResponse: appendDefaultResponseTransform($http.defaults.transformResponse, function(value) {
                         return requestObj.responseTransformer ? requestObj.responseTransformer.transform(value) : value;
                     }),
                     url: requestObj.fullUrl
-                });
+                };
+                if(requestObj.headers) {
+                    httpConfig.headers = requestObj.headers;
+                }
+                if(requestObj.requestData) {
+                    var httpConfigProperty = httpConfig.method == "GET" ? "params" : "data";
+                    httpConfig[httpConfigProperty] = requestObj.requestData;
+                }
+                return $http(httpConfig);
             }
 
             /**
@@ -88,24 +83,50 @@
              * to make the http request
              * @param  {string} relativeUrl The relative url part of the API call
              * @param  {string} httpMethod The http method for the request e.g. "get" or "post"
+             * @param  {Object} requestData (Optional) The data to send as part of the request
              * @return {Object} The request object
              */
-            function prepareApiRequest(relativeUrl, httpMethod) {
+            function prepareApiRequest(relativeUrl, httpMethod, requestData) {
                 return {
                     httpMethod: httpMethod,
                     fullUrl: getBaseUrl() + relativeUrl,
                     request: performRequest,
+                    requestData: requestData,
+                    setHeaders: setHeaders,
                     setResponseTransformer: setResponseTransformer
                 };
             }
 
             /**
-             * Prepare an HTTP get request
+             * Prepare an HTTP GET request
              * @param  {string} relativeUrl The relative url part of the API call
+             * @param  {Object} postData (Optional) The data to send for the API request
              * @return {Object} The request object
              */
-            function prepareGetRequest(relativeUrl) {
-                return prepareApiRequest(relativeUrl, "get");
+            function prepareGetRequest(relativeUrl, requestData) {
+                return prepareApiRequest(relativeUrl, "get", requestData);
+            }
+
+            /**
+             * Prepare an HTTP POST request
+             * @param  {string} relativeUrl The relative url part of the API call
+             * @param  {Object} postData (Optional) The data to send for the API request
+             * @return {Object} The request object
+             */
+            function preparePostRequest(relativeUrl, postData) {
+                return prepareApiRequest(relativeUrl, "post", postData);
+            }
+
+            /**
+             * Set the HTTP headers to send for the request
+             * @param {Object} headers Map of strings or functions which return strings representing
+             * HTTP headers to send to the server. If the return value of a function is null, the
+             * header will not be sent. Functions accept a config object as an argument.
+             * @return {Object} The request object
+             */
+            function setHeaders(headers) {
+                this.headers = headers;
+                return this;
             }
 
             /**
@@ -122,6 +143,23 @@
         }
 
         /**
+         * Assigns the global methods to the given contextObj.
+         * This is useful for methods that need to be available
+         * at the config and run stages.
+         * @param  {Object} contextObj The object to be used as the context object
+         */
+        function assignGlobalMethods(contextObj) {
+            var globalMethods = {
+                getBaseUrl: getBaseUrl,
+                setBaseUrl: setBaseUrl
+            };
+
+            for(var key in globalMethods) {
+                contextObj[key] = globalMethods[key];
+            }
+        }
+
+        /**
          * Get the base url for the API Helper
          * @return {string} The base url
          */
@@ -135,6 +173,24 @@
          */
         function setBaseUrl(baseUrl) {
             config.baseUrl = baseUrl;
+        }
+
+        /**
+         * Set the HTTP headers to send for all requests
+         * @param {Object} headers Map of strings or functions which return strings representing
+         * HTTP headers to send to the server. If the return value of a function is null, the
+         * header will not be sent. Functions accept a config object as an argument.
+         * @param  {string} httpMethod (Optional) When an httpMethod is set, the headers will
+         * only be applied to http requests of that type. If ommited, it will be applied to all
+         * requests.
+         */
+        function setHeaders(headers, httpMethod) {
+            if(typeof(httpMethod) === "undefined") {
+                $httpProvider.defaults.headers.post = {};
+                $httpProvider.defaults.headers.put = {};
+                httpMethod = "common";
+            }
+            $httpProvider.defaults.headers[httpMethod.toLowerCase()] = headers;
         }
     }
 })();
