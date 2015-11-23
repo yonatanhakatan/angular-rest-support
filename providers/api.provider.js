@@ -66,8 +66,9 @@
                     transformRequest: appendDefaultTransform($http.defaults.transformRequest, function(value) {
                         return requestObj.requestTransformer ? angular.toJson(requestObj.requestTransformer.transform(angular.fromJson(value))) : value;
                     }),
-                    transformResponse: appendDefaultTransform($http.defaults.transformResponse, function(value) {
-                        return requestObj.responseTransformer ? requestObj.responseTransformer.transform(value) : value;
+                    transformResponse: appendDefaultTransform($http.defaults.transformResponse, function(value, headers, status) {
+                        var responseTransformer = (status >= 400 && status < 500) ? requestObj.errorResponseTransformer : requestObj.responseTransformer;
+                        return responseTransformer ? responseTransformer.transform(value) : value;
                     }),
                     url: requestObj.fullUrl
                 };
@@ -95,6 +96,7 @@
                     fullUrl: getBaseUrl() + relativeUrl,
                     request: performRequest,
                     requestData: requestData,
+                    setErrorResponseTransformer: setErrorResponseTransformer,
                     setHeaders: setHeaders,
                     setRequestTransformer: setRequestTransformer,
                     setResponseTransformer: setResponseTransformer
@@ -119,6 +121,17 @@
              */
             function preparePostRequest(relativeUrl, postData) {
                 return prepareApiRequest(relativeUrl, "post", postData);
+            }
+
+            /**
+             * Sets the error response transformer for the request
+             * Note: The error response transformer MUST have a method
+             * named 'transform' defined to handle the transformation
+             * @return {Object} The request object
+             */
+            function setErrorResponseTransformer(errorResponseTransformer) {
+                this.errorResponseTransformer = errorResponseTransformer;
+                return this;
             }
 
             /**
