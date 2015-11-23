@@ -35,6 +35,7 @@
       var factory = {
         delete: prepareDeleteRequest,
         get: prepareGetRequest,
+        put: preparePutRequest,
         post: preparePostRequest,
         setDefaultErrorResponseTransformer: setDefaultErrorResponseTransformer,
         setDefaultRequestTransformer: setDefaultRequestTransformer,
@@ -161,6 +162,16 @@
        */
       function preparePostRequest(relativeUrl, postData) {
         return prepareApiRequest(relativeUrl, 'post', postData);
+      }
+
+      /**
+       * Prepare an HTTP PUT request
+       * @param  {string} relativeUrl The relative url part of the API call
+       * @param  {Object} requestData (Optional) The data to send for the API request
+       * @return {Object} The request object
+       */
+      function preparePutRequest(relativeUrl, requestData) {
+        return prepareApiRequest(relativeUrl, 'put', requestData);
       }
 
       /**
