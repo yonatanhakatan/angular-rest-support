@@ -33,6 +33,7 @@
      */
     function apiHelperFactory($http) {
       var factory = {
+        delete: prepareDeleteRequest,
         get: prepareGetRequest,
         post: preparePostRequest,
         setDefaultErrorResponseTransformer: setDefaultErrorResponseTransformer,
@@ -130,6 +131,16 @@
           setRequestTransformer: setRequestTransformer,
           setResponseTransformer: setResponseTransformer
         };
+      }
+
+      /**
+       * Prepare an HTTP DELETE request
+       * @param  {string} relativeUrl The relative url part of the API call
+       * @param  {Object} requestData (Optional) The data to send for the API request
+       * @return {Object} The request object
+       */
+      function prepareDeleteRequest(relativeUrl, requestData) {
+        return prepareApiRequest(relativeUrl, 'delete', requestData);
       }
 
       /**
