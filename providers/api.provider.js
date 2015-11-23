@@ -35,6 +35,8 @@
             var factory = {
                 get: prepareGetRequest,
                 post: preparePostRequest,
+                setDefaultErrorResponseTransformer: setDefaultErrorResponseTransformer,
+                setDefaultResponseTransformer: setDefaultResponseTransformer
             };
 
             assignGlobalMethods(factory);
@@ -67,8 +69,15 @@
                         return requestObj.requestTransformer ? angular.toJson(requestObj.requestTransformer.transform(angular.fromJson(value))) : value;
                     }),
                     transformResponse: appendDefaultTransform($http.defaults.transformResponse, function(value, headers, status) {
-                        var responseTransformer = (status >= 400 && status < 500) ? requestObj.errorResponseTransformer : requestObj.responseTransformer;
-                        return responseTransformer ? responseTransformer.transform(value) : value;
+                        var responseTransformer, defaultResponseTransformer;
+                        if(status >= 400 && status < 500) {
+                            responseTransformer = requestObj.errorResponseTransformer;
+                            defaultResponseTransformer = factory.defaultErrorResponseTransformer;
+                        } else {
+                            responseTransformer = requestObj.responseTransformer;
+                            defaultResponseTransformer = factory.defaultResponseTransformer;
+                        }
+                        return responseTransformer ? responseTransformer.transform(value) : ( defaultResponseTransformer ? defaultResponseTransformer.transform(value) : value );
                     }),
                     url: requestObj.fullUrl
                 };
@@ -121,6 +130,28 @@
              */
             function preparePostRequest(relativeUrl, postData) {
                 return prepareApiRequest(relativeUrl, "post", postData);
+            }
+
+            /**
+             * Sets the default error response transformer for all future requests
+             * Note: The default error response transformer MUST have a method
+             * named 'transform' defined to handle the transformation
+             * @return {Object} The factory object
+             */
+            function setDefaultErrorResponseTransformer(defaultErrorResponseTransformer) {
+                this.defaultErrorResponseTransformer = defaultErrorResponseTransformer;
+                return this;
+            }
+
+            /**
+             * Sets the default response transformer for all future requests
+             * Note: The default response transformer MUST have a method
+             * named 'transform' defined to handle the transformation
+             * @return {Object} The factory object
+             */
+            function setDefaultResponseTransformer(defaultResponseTransformer) {
+                this.defaultResponseTransformer = defaultResponseTransformer;
+                return this;
             }
 
             /**
