@@ -42,13 +42,13 @@
             return factory;
 
             /**
-             * Appends the default response transformations
-             * to the new response transformation
-             * @param  {Array|Function} defaults The default response transformation(s)
-             * @param  {Function} transform The new response transformation
+             * Appends the default request/response transformations
+             * to the new request/response transformation
+             * @param  {Array|Function} defaults The default request/response transformation(s)
+             * @param  {Function} transform The new request/response transformation
              * @return {Array}
              */
-            function appendDefaultResponseTransform(defaults, transform) {
+            function appendDefaultTransform(defaults, transform) {
                 // We can't guarantee that the default transformation is an array
                 defaults = angular.isArray(defaults) ? defaults : [defaults];
                 // Append the new transformation to the defaults
@@ -63,7 +63,10 @@
                 var requestObj = this;
                 var httpConfig = {
                     method: requestObj.httpMethod.toUpperCase(),
-                    transformResponse: appendDefaultResponseTransform($http.defaults.transformResponse, function(value) {
+                    transformRequest: appendDefaultTransform($http.defaults.transformRequest, function(value) {
+                        return requestObj.requestTransformer ? angular.toJson(requestObj.requestTransformer.transform(angular.fromJson(value))) : value;
+                    }),
+                    transformResponse: appendDefaultTransform($http.defaults.transformResponse, function(value) {
                         return requestObj.responseTransformer ? requestObj.responseTransformer.transform(value) : value;
                     }),
                     url: requestObj.fullUrl
@@ -93,6 +96,7 @@
                     request: performRequest,
                     requestData: requestData,
                     setHeaders: setHeaders,
+                    setRequestTransformer: setRequestTransformer,
                     setResponseTransformer: setResponseTransformer
                 };
             }
@@ -126,6 +130,17 @@
              */
             function setHeaders(headers) {
                 this.headers = headers;
+                return this;
+            }
+
+            /**
+             * Sets the request transformer for the request
+             * Note: The request transformer MUST have a method
+             * named 'transform' defined to handle the transformation
+             * @return {Object} The request object
+             */
+            function setRequestTransformer(requestTransformer) {
+                this.requestTransformer = requestTransformer;
                 return this;
             }
 
