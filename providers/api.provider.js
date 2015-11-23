@@ -28,7 +28,7 @@
     /**
      * Helper factory which is run at run stage
      * of Angular lifecycle.
-     * @param  {[type]} $http Injected $http object
+     * @param  {Object} $http Injected $http object
      * @return {Object} The factory object
      */
     function apiHelperFactory($http) {
@@ -67,31 +67,44 @@
 
         var httpConfig = {
           method: requestObj.httpMethod.toUpperCase(),
-          transformRequest: appendDefaultTransform($http.defaults.transformRequest, function(value) {
-            return requestObj.requestTransformer ?
-              angular.toJson(requestObj.requestTransformer.transform(angular.fromJson(value))) :
-              ( factory.defaultRequestTransformer ? angular.toJson(factory.defaultRequestTransformer.transform(angular.fromJson(value))) : value );
-          }),
-          transformResponse: appendDefaultTransform($http.defaults.transformResponse, function(value, headers, status) {
-            var responseTransformer, defaultResponseTransformer;
-            if(status >= 400 && status < 500) {
-              responseTransformer = requestObj.errorResponseTransformer;
-              defaultResponseTransformer = factory.defaultErrorResponseTransformer;
-            } else {
-              responseTransformer = requestObj.responseTransformer;
-              defaultResponseTransformer = factory.defaultResponseTransformer;
+          transformRequest: appendDefaultTransform(
+            $http.defaults.transformRequest,
+            function(value) {
+              return requestObj.requestTransformer ?
+                angular.toJson(requestObj.requestTransformer.transform(angular.fromJson(value))) :
+                (
+                  factory.defaultRequestTransformer ?
+                  angular.toJson(
+                    factory.defaultRequestTransformer.transform(angular.fromJson(value))
+                  ) : value
+                );
             }
-            return responseTransformer ? responseTransformer.transform(value) : ( defaultResponseTransformer ? defaultResponseTransformer.transform(value) : value );
-          }),
+          ),
+          transformResponse: appendDefaultTransform(
+            $http.defaults.transformResponse,
+            function(value, headers, status) {
+              var responseTransformer, defaultResponseTransformer;
+              if (status >= 400 && status < 500) {
+                responseTransformer = requestObj.errorResponseTransformer;
+                defaultResponseTransformer = factory.defaultErrorResponseTransformer;
+              } else {
+                responseTransformer = requestObj.responseTransformer;
+                defaultResponseTransformer = factory.defaultResponseTransformer;
+              }
+              return responseTransformer ?
+                responseTransformer.transform(value) :
+                (defaultResponseTransformer ? defaultResponseTransformer.transform(value) : value);
+            }
+          ),
           url: requestObj.fullUrl
         };
 
-        if(requestObj.headers) {
+        if (requestObj.headers) {
           httpConfig.headers = requestObj.headers;
         }
 
-        if(requestObj.requestData) {
-          var httpConfigProperty = httpConfig.method == "GET" ? "params" : "data";
+        if (requestObj.requestData) {
+          var httpConfigProperty = httpConfig.method == 'GET' ? 'params' : 'data';
           httpConfig[httpConfigProperty] = requestObj.requestData;
         }
 
@@ -122,11 +135,11 @@
       /**
        * Prepare an HTTP GET request
        * @param  {string} relativeUrl The relative url part of the API call
-       * @param  {Object} postData (Optional) The data to send for the API request
+       * @param  {Object} requestData (Optional) The data to send for the API request
        * @return {Object} The request object
        */
       function prepareGetRequest(relativeUrl, requestData) {
-        return prepareApiRequest(relativeUrl, "get", requestData);
+        return prepareApiRequest(relativeUrl, 'get', requestData);
       }
 
       /**
@@ -136,7 +149,7 @@
        * @return {Object} The request object
        */
       function preparePostRequest(relativeUrl, postData) {
-        return prepareApiRequest(relativeUrl, "post", postData);
+        return prepareApiRequest(relativeUrl, 'post', postData);
       }
 
       /**
@@ -231,7 +244,7 @@
         setBaseUrl: setBaseUrl
       };
 
-      for(var key in globalMethods) {
+      for (var key in globalMethods) {
         contextObj[key] = globalMethods[key];
       }
     }
@@ -262,10 +275,10 @@
      * requests.
      */
     function setHeaders(headers, httpMethod) {
-      if(typeof(httpMethod) === "undefined") {
+      if (typeof(httpMethod) === 'undefined') {
         $httpProvider.defaults.headers.post = {};
         $httpProvider.defaults.headers.put = {};
-        httpMethod = "common";
+        httpMethod = 'common';
       }
       $httpProvider.defaults.headers[httpMethod.toLowerCase()] = headers;
     }
