@@ -35,6 +35,7 @@
       var factory = {
         delete: prepareDeleteRequest,
         get: prepareGetRequest,
+        patch: preparePatchRequest,
         put: preparePutRequest,
         post: preparePostRequest,
         setDefaultErrorResponseTransformer: setDefaultErrorResponseTransformer,
@@ -152,6 +153,16 @@
        */
       function prepareGetRequest(relativeUrl, requestData) {
         return prepareApiRequest(relativeUrl, 'get', requestData);
+      }
+
+      /**
+       * Prepare an HTTP PATCH request
+       * @param  {string} relativeUrl The relative url part of the API call
+       * @param  {Object} requestData (Optional) The data to send for the API request
+       * @return {Object} The request object
+       */
+      function preparePatchRequest(relativeUrl, requestData) {
+        return prepareApiRequest(relativeUrl, 'patch', requestData);
       }
 
       /**
@@ -298,6 +309,7 @@
      */
     function setHeaders(headers, httpMethod) {
       if (typeof(httpMethod) === 'undefined') {
+        $httpProvider.defaults.headers.patch = {};
         $httpProvider.defaults.headers.post = {};
         $httpProvider.defaults.headers.put = {};
         httpMethod = 'common';
