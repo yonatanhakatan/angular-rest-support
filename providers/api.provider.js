@@ -168,11 +168,11 @@
       /**
        * Prepare an HTTP POST request
        * @param  {string} relativeUrl The relative url part of the API call
-       * @param  {Object} postData (Optional) The data to send for the API request
+       * @param  {Object} requestData (Optional) The data to send for the API request
        * @return {Object} The request object
        */
-      function preparePostRequest(relativeUrl, postData) {
-        return prepareApiRequest(relativeUrl, 'post', postData);
+      function preparePostRequest(relativeUrl, requestData) {
+        return prepareApiRequest(relativeUrl, 'post', requestData);
       }
 
       /**
