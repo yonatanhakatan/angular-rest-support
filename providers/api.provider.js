@@ -36,6 +36,7 @@
                 get: prepareGetRequest,
                 post: preparePostRequest,
                 setDefaultErrorResponseTransformer: setDefaultErrorResponseTransformer,
+                setDefaultRequestTransformer: setDefaultRequestTransformer,
                 setDefaultResponseTransformer: setDefaultResponseTransformer
             };
 
@@ -66,7 +67,9 @@
                 var httpConfig = {
                     method: requestObj.httpMethod.toUpperCase(),
                     transformRequest: appendDefaultTransform($http.defaults.transformRequest, function(value) {
-                        return requestObj.requestTransformer ? angular.toJson(requestObj.requestTransformer.transform(angular.fromJson(value))) : value;
+                        return requestObj.requestTransformer ?
+                                angular.toJson(requestObj.requestTransformer.transform(angular.fromJson(value))) :
+                                ( factory.defaultRequestTransformer ? angular.toJson(factory.defaultRequestTransformer.transform(angular.fromJson(value))) : value );
                     }),
                     transformResponse: appendDefaultTransform($http.defaults.transformResponse, function(value, headers, status) {
                         var responseTransformer, defaultResponseTransformer;
@@ -140,6 +143,17 @@
              */
             function setDefaultErrorResponseTransformer(defaultErrorResponseTransformer) {
                 this.defaultErrorResponseTransformer = defaultErrorResponseTransformer;
+                return this;
+            }
+
+            /**
+             * Sets the default request transformer for all future requests
+             * Note: The default request transformer MUST have a method
+             * named 'transform' defined to handle the transformation
+             * @return {Object} The factory object
+             */
+            function setDefaultRequestTransformer(defaultRequestTransformer) {
+                this.defaultRequestTransformer = defaultRequestTransformer;
                 return this;
             }
 
