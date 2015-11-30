@@ -35,7 +35,8 @@ gulp.task('bower', function() {
 gulp.task('scripts', function() {
   return gulp
     .src([
-      srcFolder + '**/*.js'
+      srcFolder + '**/*.js',
+      '!' + srcFolder + 'tests/**/*'
     ])
     .pipe(plugins.plumber())
     .pipe(plugins.jshint())
@@ -66,6 +67,7 @@ gulp.task('watch', function() {
  */
 gulp.task('default', ['clean'], function() {
   return runSequence(
+    'bower',
     'scripts'
   );
 });

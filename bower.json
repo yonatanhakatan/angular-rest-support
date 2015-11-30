@@ -6,6 +6,7 @@
   "license": "MIT",
   "homepage": "https://github.com/yonatanhakatan/angular-rest-support",
   "dependencies": {
-    "angular": "^1.4.7"
+    "angular": "^1.4.7",
+    "angular-mocks": "^1.4.7"
   }
 }
