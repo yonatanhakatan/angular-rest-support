@@ -22,6 +22,7 @@
 
     this.$get = apiHelperFactory;
     this.setHeaders = setHeaders;
+    this.setCache = setCache;
 
     apiHelperFactory.$inject = ['$http'];
 
@@ -102,6 +103,10 @@
           url: requestObj.fullUrl
         };
 
+        if (requestObj.cache) {
+          httpConfig.cache = requestObj.cache;
+        }
+
         if (requestObj.headers) {
           httpConfig.headers = requestObj.headers;
         }
@@ -128,6 +133,7 @@
           fullUrl: getBaseUrl() + relativeUrl,
           request: performRequest,
           requestData: requestData,
+          setCache: setCache,
           setErrorResponseTransformer: setErrorResponseTransformer,
           setHeaders: setHeaders,
           setRequestTransformer: setRequestTransformer,
@@ -183,6 +189,16 @@
        */
       function preparePutRequest(relativeUrl, requestData) {
         return prepareApiRequest(relativeUrl, 'put', requestData);
+      }
+
+      /**
+       * Set the cache for the request
+       * @param {(boolean|Object)} cache  If true, a default $http cache will be used to cache the GET
+       * request, otherwise if a cache instance built with $cacheFactory, this cache will be used for caching.
+       */
+      function setCache(cache) {
+        this.cache = cache;
+        return this;
       }
 
       /**
@@ -296,6 +312,15 @@
      */
     function setBaseUrl(baseUrl) {
       config.baseUrl = baseUrl;
+    }
+
+    /**
+     * Set the cache for all requests
+     * @param {(boolean|Object)} cache  If true, a default $http cache will be used to cache the GET
+     * request, otherwise if a cache instance built with $cacheFactory, this cache will be used for caching.
+     */
+    function setCache(cache) {
+      $httpProvider.defaults.cache = cache;
     }
 
     /**
