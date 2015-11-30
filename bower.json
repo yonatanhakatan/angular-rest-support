@@ -1,0 +1,11 @@
+{
+  "name": "angular-rest-support",
+  "version": "0.1.0",
+  "description": "Support module for consuming restful API's",
+  "author": "Jonny Levy",
+  "license": "MIT",
+  "homepage": "https://github.com/yonatanhakatan/angular-rest-support",
+  "dependencies": {
+    "angular": "^1.4.7"
+  }
+}

@@ -2,16 +2,16 @@
   'use strict';
 
   angular
-    .module('api')
-    .provider('apiHelper', apiHelperProvider);
+    .module('ars')
+    .provider('arsHelper', arsHelperProvider);
 
-  apiHelperProvider.$inject = ['$httpProvider'];
+  arsHelperProvider.$inject = ['$httpProvider'];
 
   /**
    * An API Helper that allows you to make
    * requests to REST API's.
    */
-  function apiHelperProvider($httpProvider) {
+  function arsHelperProvider($httpProvider) {
     /* jshint validthis:true */
 
     var config = {
