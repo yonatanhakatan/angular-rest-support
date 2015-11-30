@@ -51,7 +51,7 @@
       /**
        * Appends the default request/response transformations
        * to the new request/response transformation
-       * @param  {Array|Function} defaults The default request/response transformation(s)
+       * @param  {(Array|Function)} defaults The default request/response transformation(s)
        * @param  {Function} transform The new request/response transformation
        * @return {Array}
        */
