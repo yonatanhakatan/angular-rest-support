@@ -23,6 +23,11 @@ describe('Angular Rest Support', function() {
       return [200, data];
     });
     $httpBackend.whenPOST('/badurl').respond(400);
+
+    $httpBackend.whenPUT('/authors').respond(function(method, url, data, headers) {
+      return [200, data];
+    });
+    $httpBackend.whenPUT('/badurl').respond(400);
   });
 
   describe('When calling a valid GET end-point', function() {
@@ -154,6 +159,52 @@ describe('Angular Rest Support', function() {
     it('Should return the correct http status code', function() {
       var httpStatus;
       postRequest
+        .then(function(success) {}, function(fail) {
+          httpStatus = fail.status;
+        });
+      $httpBackend.flush();
+      expect(httpStatus).toEqual(400);
+    });
+  });
+
+  describe('When calling a valid PUT end-point', function() {
+    var putData = {name: 'John Doe', dob: '1982-01-01'};
+    var putRequest;
+
+    beforeEach(function() {
+      putRequest = arsHelper
+        .put('/authors', putData)
+        .request();
+    });
+
+    it('Should make a PUT request', function() {
+      $httpBackend.expectPUT('/authors');
+      $httpBackend.flush();
+    });
+
+    it('Should return the correct data', function() {
+      var returnedData;
+      putRequest
+        .then(function(success) {
+          returnedData = success.data;
+        });
+      $httpBackend.flush();
+      expect(returnedData).toEqual(putData);
+    });
+  });
+
+  describe('When calling an invalid PUT end-point', function() {
+    var putRequest;
+
+    beforeEach(function() {
+      putRequest = arsHelper
+        .put('/badurl')
+        .request();
+    });
+
+    it('Should return the correct http status code', function() {
+      var httpStatus;
+      putRequest
         .then(function(success) {}, function(fail) {
           httpStatus = fail.status;
         });
