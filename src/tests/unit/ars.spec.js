@@ -17,6 +17,7 @@ describe('Angular Rest Support', function() {
     $httpBackend.whenPOST('/authors').respond(function(method, url, data, headers) {
       return [200, data];
     });
+    $httpBackend.whenPOST('/badurl').respond(400);
   });
 
   describe('When calling a valid GET end-point', function() {
@@ -87,6 +88,26 @@ describe('Angular Rest Support', function() {
         });
       $httpBackend.flush();
       expect(returnedData).toEqual(postData);
+    });
+  });
+
+  describe('When calling an invalid POST end-point', function() {
+    var postRequest;
+
+    beforeEach(function() {
+      postRequest = arsHelper
+        .post('/badurl')
+        .request();
+    });
+
+    it('Should return the correct http status code', function() {
+      var httpStatus;
+      postRequest
+        .then(function(success) {}, function(fail) {
+          httpStatus = fail.status;
+        });
+      $httpBackend.flush();
+      expect(httpStatus).toEqual(400);
     });
   });
 });
