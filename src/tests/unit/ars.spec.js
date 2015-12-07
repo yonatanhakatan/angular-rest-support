@@ -53,7 +53,7 @@ describe('Angular Rest Support', function() {
         .request();
     });
 
-    it('Should return the correct data', function() {
+    it('Should return the correct http status code', function() {
       var httpStatus;
       getRequest
         .then(function(success) {}, function(fail) {
