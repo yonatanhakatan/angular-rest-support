@@ -19,4 +19,4 @@ before_script:
   - node_modules/bower/bin/bower install
 
 script:
-  - node_modules/karma/bin/karma start karma.conf.js --no-auto-watch --single-run --browser=Firefox
+  - node_modules/karma/bin/karma start karma.conf.js --no-auto-watch --single-run --reporters=dots --browsers=Firefox
