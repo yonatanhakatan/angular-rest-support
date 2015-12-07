@@ -10,7 +10,7 @@ describe('Angular Rest Support', function() {
       arsHelper = _arsHelper_;
     });
 
-    // Mock Data
+    // Mock the Data
     $httpBackend.whenGET('/authors').respond(200, dataBuilder.allAuthors);
   });
 
