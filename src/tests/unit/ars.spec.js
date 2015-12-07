@@ -11,6 +11,9 @@ describe('Angular Rest Support', function() {
     });
 
     // Mock the Data
+    $httpBackend.whenDELETE('/authors/1').respond(200);
+    $httpBackend.whenDELETE('/badurl').respond(400);
+
     $httpBackend.whenGET('/authors').respond(200, dataBuilder.allAuthors);
     $httpBackend.whenGET('/badurl').respond(400);
 
@@ -28,6 +31,51 @@ describe('Angular Rest Support', function() {
       return [200, data];
     });
     $httpBackend.whenPUT('/badurl').respond(400);
+  });
+
+  describe('When calling a valid DELETE end-point', function() {
+    var deleteRequest;
+
+    beforeEach(function() {
+      deleteRequest = arsHelper
+        .delete('/authors/1')
+        .request();
+    });
+
+    it('Should make a DELETE request', function() {
+      $httpBackend.expectDELETE('/authors/1');
+      $httpBackend.flush();
+    });
+
+    it('Should return the correct http status code', function() {
+      var httpStatus;
+      deleteRequest
+        .then(function(success) {
+          httpStatus = success.status;
+        });
+      $httpBackend.flush();
+      expect(httpStatus).toEqual(200);
+    });
+  });
+
+  describe('When calling an invalid DELETE end-point', function() {
+    var deleteRequest;
+
+    beforeEach(function() {
+      deleteRequest = arsHelper
+        .delete('/badurl')
+        .request();
+    });
+
+    it('Should return the correct http status code', function() {
+      var httpStatus;
+      deleteRequest
+        .then(function(success) {}, function(fail) {
+          httpStatus = fail.status;
+        });
+      $httpBackend.flush();
+      expect(httpStatus).toEqual(400);
+    });
   });
 
   describe('When calling a valid GET end-point', function() {
