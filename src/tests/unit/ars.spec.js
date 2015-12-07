@@ -215,6 +215,55 @@ describe('Angular Rest Support', function() {
     });
   });
 
+  describe('When setting a request transformer', function() {
+    var postData = {name: 'John Doe', dob: '1982-01-01'};
+    var postRequest;
+
+    var transformer = {
+      transform: function(data) {
+        return {
+          'data': {
+            'type': 'authors',
+            'attributes': {
+              'name': data.name,
+              'date_of_birth': data.dob
+            }
+          }
+        };
+      }
+    };
+
+    beforeEach(function() {
+      postRequest = arsHelper
+        .post('/authors', postData)
+        .setRequestTransformer(transformer)
+        .request();
+
+      spyOn(transformer, 'transform').and.callThrough();
+    });
+
+    it('The transformer\'s transform method should be called with the correct data', function() {
+      $httpBackend.flush();
+      expect(transformer.transform).toHaveBeenCalledWith(postData);
+    });
+
+    it('The transformer\'s transform method should be called the correct no. of times', function() {
+      expect(transformer.transform.calls.count()).toEqual(0);
+      $httpBackend.flush();
+      expect(transformer.transform.calls.count()).toEqual(1);
+    });
+
+    it('Should return the correct data', function() {
+      var returnedData;
+      postRequest
+        .then(function(success) {
+          returnedData = success.data;
+        });
+      $httpBackend.flush();
+      expect(returnedData).toEqual(transformer.transform(postData));
+    });
+  });
+
   describe('When calling a valid PUT end-point', function() {
     var putData = {name: 'John Doe', dob: '1982-01-01'};
     var putRequest;
