@@ -12,9 +12,10 @@ describe('Angular Rest Support', function() {
 
     // Mock the Data
     $httpBackend.whenGET('/authors').respond(200, dataBuilder.allAuthors);
+    $httpBackend.whenGET('/badurl').respond(400);
   });
 
-  describe('When calling a GET end-point', function() {
+  describe('When calling a valid GET end-point', function() {
     var getRequest;
 
     beforeEach(function() {
@@ -36,6 +37,26 @@ describe('Angular Rest Support', function() {
         });
       $httpBackend.flush();
       expect(returnedData).toEqual(dataBuilder.allAuthors);
+    });
+  });
+
+  describe('When calling an invalid GET end-point', function() {
+    var getRequest;
+
+    beforeEach(function() {
+      getRequest = arsHelper
+        .get('/badurl')
+        .request();
+    });
+
+    it('Should return the correct data', function() {
+      var httpStatus;
+      getRequest
+        .then(function(success) {}, function(fail) {
+          httpStatus = fail.status;
+        });
+      $httpBackend.flush();
+      expect(httpStatus).toEqual(400);
     });
   });
 });
