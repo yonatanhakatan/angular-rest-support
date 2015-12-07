@@ -14,7 +14,7 @@ describe('Angular Rest Support', function() {
     $httpBackend.whenGET('/authors').respond(200, dataBuilder.allAuthors);
     $httpBackend.whenGET('/badurl').respond(400);
 
-    $httpBackend.whenPATCH('/authors').respond(function(method, url, data, headers) {
+    $httpBackend.whenPATCH('/authors/1').respond(function(method, url, data, headers) {
       return [200, data];
     });
     $httpBackend.whenPATCH('/badurl').respond(400);
@@ -24,7 +24,7 @@ describe('Angular Rest Support', function() {
     });
     $httpBackend.whenPOST('/badurl').respond(400);
 
-    $httpBackend.whenPUT('/authors').respond(function(method, url, data, headers) {
+    $httpBackend.whenPUT('/authors/1').respond(function(method, url, data, headers) {
       return [200, data];
     });
     $httpBackend.whenPUT('/badurl').respond(400);
@@ -81,12 +81,12 @@ describe('Angular Rest Support', function() {
 
     beforeEach(function() {
       patchRequest = arsHelper
-        .patch('/authors', patchData)
+        .patch('/authors/1', patchData)
         .request();
     });
 
     it('Should make a PATCH request', function() {
-      $httpBackend.expectPATCH('/authors');
+      $httpBackend.expectPATCH('/authors/1');
       $httpBackend.flush();
     });
 
@@ -173,12 +173,12 @@ describe('Angular Rest Support', function() {
 
     beforeEach(function() {
       putRequest = arsHelper
-        .put('/authors', putData)
+        .put('/authors/1', putData)
         .request();
     });
 
     it('Should make a PUT request', function() {
-      $httpBackend.expectPUT('/authors');
+      $httpBackend.expectPUT('/authors/1');
       $httpBackend.flush();
     });
 
