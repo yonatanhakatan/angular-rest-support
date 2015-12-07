@@ -114,9 +114,6 @@ describe('Angular Rest Support', function() {
   });
 
   describe('When setting a request transformer', function() {
-    var postData = {name: 'John Doe', dob: '1982-01-01'};
-    var postRequest;
-
     var transformer = {
       transform: function(data) {
         return {
@@ -130,10 +127,11 @@ describe('Angular Rest Support', function() {
         };
       }
     };
+    var postRequest;
 
     beforeEach(function() {
       postRequest = arsHelper
-        .post('/authors', postData)
+        .post('/authors', requestData)
         .setRequestTransformer(transformer)
         .request();
 
@@ -142,7 +140,7 @@ describe('Angular Rest Support', function() {
 
     it('The transformer\'s transform method should be called with the correct data', function() {
       $httpBackend.flush();
-      expect(transformer.transform).toHaveBeenCalledWith(postData);
+      expect(transformer.transform).toHaveBeenCalledWith(requestData);
     });
 
     it('The transformer\'s transform method should be called the correct no. of times', function() {
@@ -158,7 +156,7 @@ describe('Angular Rest Support', function() {
           returnedData = success.data;
         });
       $httpBackend.flush();
-      expect(returnedData).toEqual(transformer.transform(postData));
+      expect(returnedData).toEqual(transformer.transform(requestData));
     });
   });
 
