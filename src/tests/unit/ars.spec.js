@@ -92,21 +92,24 @@ describe('Angular Rest Support', function() {
   describe('When calling an invalid end-point', function() {
     for (var key in httpMethods) {
       var httpMethod = httpMethods[key];
-      var request;
 
-      beforeEach(function() {
-        request = arsHelper[httpMethod]('/badurl').request();
-      });
+      (function(httpMethod) {
+        var request;
 
-      it('Should return the correct http status code', function() {
-        var httpStatus;
-        request
-          .then(function(success) {}, function(fail) {
-            httpStatus = fail.status;
-          });
-        $httpBackend.flush();
-        expect(httpStatus).toEqual(400);
-      });
+        beforeEach(function() {
+          request = arsHelper[httpMethod]('/badurl').request();
+        });
+
+        it('Should return the correct http status code', function() {
+          var httpStatus;
+          request
+            .then(function(success) {}, function(fail) {
+              httpStatus = fail.status;
+            });
+          $httpBackend.flush();
+          expect(httpStatus).toEqual(400);
+        });
+      })(httpMethod);
     }
   });
 
