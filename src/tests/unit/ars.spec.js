@@ -76,7 +76,7 @@ describe('Angular Rest Support', function() {
           $httpBackend.flush();
 
           if (httpMethod == 'get') {
-            expect(returnedData).toEqual(dataBuilder.allAuthors);
+            expect(returnedData).toEqual(JSON.parse(dataBuilder.allAuthors));
           } else if (httpMethod == 'delete') {
             expect(returnedData).toEqual(undefined);
           } else {
@@ -191,7 +191,7 @@ describe('Angular Rest Support', function() {
 
     it('The transformer\'s transform method should be called with the correct data', function() {
       $httpBackend.flush();
-      expect(transformer.transform).toHaveBeenCalledWith(dataBuilder.allAuthors);
+      expect(transformer.transform).toHaveBeenCalledWith(JSON.parse(dataBuilder.allAuthors));
     });
 
     it('The transformer\'s transform method should be called the correct no. of times', function() {
@@ -206,7 +206,7 @@ describe('Angular Rest Support', function() {
         returnedData = success.data;
       });
       $httpBackend.flush();
-      expect(returnedData).toEqual(transformer.transform(dataBuilder.allAuthors));
+      expect(returnedData).toEqual(transformer.transform(JSON.parse(dataBuilder.allAuthors)));
     });
   });
 

@@ -1,6 +1,6 @@
 function jsonApiDataBuilder() {
   return {
-    allAuthors: {
+    allAuthors: JSON.stringify({
       'data': [
         {
           'id': '1',
@@ -59,6 +59,6 @@ function jsonApiDataBuilder() {
           }
         }
       ]
-    }
+    })
   };
 }
