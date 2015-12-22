@@ -14,15 +14,18 @@
   function arsHelperProvider($httpProvider) {
     /* jshint validthis:true */
 
-    var config = {
-      baseUrl: ''
+    var providerConfig = {
+      defaultBaseUrl: '',
+      defaultErrorResponseTransformer: null,
+      defaultRequestTransformer: null,
+      defaultResponseTransformer: null
     };
 
-    assignGlobalMethods(this);
-
     this.$get = apiHelperFactory;
-    this.setHeaders = setHeaders;
-    this.setCache = setCache;
+    this.getDefaultBaseUrl = getDefaultBaseUrl;
+    this.setDefaultBaseUrl = setDefaultBaseUrl;
+    this.setDefaultHeaders = setDefaultHeaders;
+    this.setDefaultCache = setDefaultCache;
 
     apiHelperFactory.$inject = ['$http'];
 
@@ -43,8 +46,6 @@
         setDefaultRequestTransformer: setDefaultRequestTransformer,
         setDefaultResponseTransformer: setDefaultResponseTransformer
       };
-
-      assignGlobalMethods(factory);
 
       return factory;
 
@@ -70,17 +71,20 @@
         var requestObj = this;
 
         var httpConfig = {
-          method: requestObj.httpMethod.toUpperCase(),
+          method: requestObj._config.httpMethod.toUpperCase(),
           transformRequest: appendDefaultTransform(
             $http.defaults.transformRequest,
             function(value) {
-              return requestObj.requestTransformer ?
-                angular.toJson(requestObj.requestTransformer.transform(angular.fromJson(value))) :
+              return requestObj._config.requestTransformer ?
+                angular.toJson(
+                  requestObj._config.requestTransformer.transform(angular.fromJson(value))
+                ) :
                 (
-                  factory.defaultRequestTransformer ?
+                  providerConfig.defaultRequestTransformer ?
                   angular.toJson(
-                    factory.defaultRequestTransformer.transform(angular.fromJson(value))
-                  ) : value
+                    providerConfig.defaultRequestTransformer.transform(angular.fromJson(value))
+                  ) :
+                  value
                 );
             }
           ),
@@ -89,31 +93,31 @@
             function(value, headers, status) {
               var responseTransformer, defaultResponseTransformer;
               if (status >= 400 && status < 500) {
-                responseTransformer = requestObj.errorResponseTransformer;
-                defaultResponseTransformer = factory.defaultErrorResponseTransformer;
+                responseTransformer = requestObj._config.errorResponseTransformer;
+                defaultResponseTransformer = providerConfig.defaultErrorResponseTransformer;
               } else {
-                responseTransformer = requestObj.responseTransformer;
-                defaultResponseTransformer = factory.defaultResponseTransformer;
+                responseTransformer = requestObj._config.responseTransformer;
+                defaultResponseTransformer = providerConfig.defaultResponseTransformer;
               }
               return responseTransformer ?
                 responseTransformer.transform(value) :
                 (defaultResponseTransformer ? defaultResponseTransformer.transform(value) : value);
             }
           ),
-          url: requestObj.fullUrl
+          url: requestObj._config.baseUrl + requestObj._config.relativeUrl
         };
 
-        if (requestObj.cache) {
-          httpConfig.cache = requestObj.cache;
+        if (requestObj._config.cache) {
+          httpConfig.cache = requestObj._config.cache;
         }
 
-        if (requestObj.headers) {
-          httpConfig.headers = requestObj.headers;
+        if (requestObj._config.headers) {
+          httpConfig.headers = requestObj._config.headers;
         }
 
-        if (requestObj.requestData) {
+        if (requestObj._config.requestData) {
           var httpConfigProperty = httpConfig.method == 'GET' ? 'params' : 'data';
-          httpConfig[httpConfigProperty] = requestObj.requestData;
+          httpConfig[httpConfigProperty] = requestObj._config.requestData;
         }
 
         return $http(httpConfig);
@@ -128,11 +132,22 @@
        * @return {Object} The request object
        */
       function prepareApiRequest(relativeUrl, httpMethod, requestData) {
-        return {
+        var requestObjConfig = {
+          baseUrl: providerConfig.defaultBaseUrl,
+          cache: null,
+          errorResponseTransformer: null,
+          headers: null,
           httpMethod: httpMethod,
-          fullUrl: getBaseUrl() + relativeUrl,
-          request: performRequest,
+          relativeUrl: relativeUrl,
           requestData: requestData,
+          requestTransformer: null,
+          responseTransformer: null
+        };
+
+        return {
+          _config: requestObjConfig,
+          request: performRequest,
+          setBaseUrl: setBaseUrl,
           setCache: setCache,
           setErrorResponseTransformer: setErrorResponseTransformer,
           setHeaders: setHeaders,
@@ -192,12 +207,22 @@
       }
 
       /**
+       * Sets the base url for the request
+       * @param {string} baseUrl The base url
+       */
+      function setBaseUrl(baseUrl) {
+        this._config.baseUrl = baseUrl;
+        return this;
+      }
+
+      /**
        * Set the cache for the request
        * @param {(boolean|Object)} cache  If true, a default $http cache will be used to cache the GET
        * request, otherwise if a cache instance built with $cacheFactory, this cache will be used for caching.
+       * @return {Object} The request object
        */
       function setCache(cache) {
-        this.cache = cache;
+        this._config.cache = cache;
         return this;
       }
 
@@ -208,7 +233,7 @@
        * @return {Object} The factory object
        */
       function setDefaultErrorResponseTransformer(defaultErrorResponseTransformer) {
-        this.defaultErrorResponseTransformer = defaultErrorResponseTransformer;
+        providerConfig.defaultErrorResponseTransformer = defaultErrorResponseTransformer;
         return this;
       }
 
@@ -219,7 +244,7 @@
        * @return {Object} The factory object
        */
       function setDefaultRequestTransformer(defaultRequestTransformer) {
-        this.defaultRequestTransformer = defaultRequestTransformer;
+        providerConfig.defaultRequestTransformer = defaultRequestTransformer;
         return this;
       }
 
@@ -230,7 +255,7 @@
        * @return {Object} The factory object
        */
       function setDefaultResponseTransformer(defaultResponseTransformer) {
-        this.defaultResponseTransformer = defaultResponseTransformer;
+        providerConfig.defaultResponseTransformer = defaultResponseTransformer;
         return this;
       }
 
@@ -241,7 +266,7 @@
        * @return {Object} The request object
        */
       function setErrorResponseTransformer(errorResponseTransformer) {
-        this.errorResponseTransformer = errorResponseTransformer;
+        this._config.errorResponseTransformer = errorResponseTransformer;
         return this;
       }
 
@@ -253,7 +278,7 @@
        * @return {Object} The request object
        */
       function setHeaders(headers) {
-        this.headers = headers;
+        this._config.headers = headers;
         return this;
       }
 
@@ -264,7 +289,7 @@
        * @return {Object} The request object
        */
       function setRequestTransformer(requestTransformer) {
-        this.requestTransformer = requestTransformer;
+        this._config.requestTransformer = requestTransformer;
         return this;
       }
 
@@ -275,56 +300,39 @@
        * @return {Object} The request object
        */
       function setResponseTransformer(responseTransformer) {
-        this.responseTransformer = responseTransformer;
+        this._config.responseTransformer = responseTransformer;
         return this;
       }
 
     }
 
     /**
-     * Assigns the global methods to the given contextObj.
-     * This is useful for methods that need to be available
-     * at the config and run stages.
-     * @param  {Object} contextObj The object to be used as the context object
-     */
-    function assignGlobalMethods(contextObj) {
-      var globalMethods = {
-        getBaseUrl: getBaseUrl,
-        setBaseUrl: setBaseUrl
-      };
-
-      for (var key in globalMethods) {
-        contextObj[key] = globalMethods[key];
-      }
-    }
-
-    /**
-     * Get the base url for the API Helper
+     * Get the default base url for the API Helper
      * @return {string} The base url
      */
-    function getBaseUrl() {
-      return config.baseUrl;
+    function getDefaultBaseUrl() {
+      return providerConfig.defaultBaseUrl;
     }
 
     /**
-     * Sets the base url for the API Helper
+     * Sets the default base url for the API Helper
      * @param {string} baseUrl The base url
      */
-    function setBaseUrl(baseUrl) {
-      config.baseUrl = baseUrl;
+    function setDefaultBaseUrl(baseUrl) {
+      providerConfig.defaultBaseUrl = baseUrl;
     }
 
     /**
-     * Set the cache for all requests
+     * Set the default cache for all requests
      * @param {(boolean|Object)} cache  If true, a default $http cache will be used to cache the GET
      * request, otherwise if a cache instance built with $cacheFactory, this cache will be used for caching.
      */
-    function setCache(cache) {
+    function setDefaultCache(cache) {
       $httpProvider.defaults.cache = cache;
     }
 
     /**
-     * Set the HTTP headers to send for all requests
+     * Set the default HTTP headers to send for all requests
      * @param {Object} headers Map of strings or functions which return strings representing
      * HTTP headers to send to the server. If the return value of a function is null, the
      * header will not be sent. Functions accept a config object as an argument.
@@ -332,7 +340,7 @@
      * only be applied to http requests of that type. If ommited, it will be applied to all
      * requests.
      */
-    function setHeaders(headers, httpMethod) {
+    function setDefaultHeaders(headers, httpMethod) {
       if (typeof(httpMethod) === 'undefined') {
         $httpProvider.defaults.headers.patch = {};
         $httpProvider.defaults.headers.post = {};
