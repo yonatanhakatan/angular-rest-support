@@ -4,6 +4,7 @@ describe('Angular Rest Support', function() {
   var dataBuilder = jsonApiDataBuilder();
   var httpMethods = ['delete', 'get', 'patch', 'post', 'put'];
   var requestData = {name: 'John Doe', dob: '1982-01-01'};
+  var headersData = {token: 'abc123'};
 
   beforeEach(function() {
     module('ars');
@@ -23,6 +24,13 @@ describe('Angular Rest Support', function() {
     $httpBackend
       .whenGET('/authors')
       .respond(200, dataBuilder.allAuthors);
+    $httpBackend
+      .whenGET('/authors/private')
+      .respond(function(method, url, data, headers) {
+        return (headers.token && (headers.token === headersData.token)) ?
+          [200, dataBuilder.allAuthors] :
+          400;
+      });
     $httpBackend
       .whenGET('/badurl')
       .respond(400);
@@ -243,6 +251,26 @@ describe('Angular Rest Support', function() {
       expect(errorData)
         .toEqual(dataBuilder.authorsErrorTransformer
           .transform(JSON.parse(dataBuilder.allAuthorsValidationErrors)));
+    });
+  });
+
+  describe('When setting the header for a specific request', function() {
+    var getRequest;
+
+    beforeEach(function() {
+      getRequest = arsHelper
+        .get('/authors/private')
+        .setHeaders(headersData)
+        .request();
+    });
+
+    it('Should return a successful response', function() {
+      var returnedData;
+      getRequest.then(function(success) {
+        returnedData = success.data;
+      });
+      $httpBackend.flush();
+      expect(returnedData).toEqual(JSON.parse(dataBuilder.allAuthors));
     });
   });
 
