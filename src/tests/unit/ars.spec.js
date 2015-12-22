@@ -13,26 +13,51 @@ describe('Angular Rest Support', function() {
     });
 
     // Mock the Data
-    $httpBackend.whenDELETE('/authors').respond(200);
-    $httpBackend.whenDELETE('/badurl').respond(400);
+    $httpBackend
+      .whenDELETE('/authors')
+      .respond(200);
+    $httpBackend
+      .whenDELETE('/badurl')
+      .respond(400);
 
-    $httpBackend.whenGET('/authors').respond(200, dataBuilder.allAuthors);
-    $httpBackend.whenGET('/badurl').respond(400);
+    $httpBackend
+      .whenGET('/authors')
+      .respond(200, dataBuilder.allAuthors);
+    $httpBackend
+      .whenGET('/badurl')
+      .respond(400);
 
-    $httpBackend.whenPATCH('/authors').respond(function(method, url, data, headers) {
-      return [200, data];
-    });
-    $httpBackend.whenPATCH('/badurl').respond(400);
+    $httpBackend
+      .whenPATCH('/authors')
+      .respond(function(method, url, data, headers) {
+        return [200, data];
+      });
+    $httpBackend
+      .whenPATCH('/badurl')
+      .respond(400);
 
-    $httpBackend.whenPOST('/authors').respond(function(method, url, data, headers) {
-      return [200, data];
-    });
-    $httpBackend.whenPOST('/badurl').respond(400);
+    $httpBackend
+      .whenPOST('/authors')
+      .respond(function(method, url, data, headers) {
+        return [200, data];
+      });
+    $httpBackend
+      .whenPOST('/authors/failedvalidation')
+      .respond(function(method, url, data, headers) {
+        return [422, dataBuilder.allAuthorsValidationErrors];
+      });
+    $httpBackend
+      .whenPOST('/badurl')
+      .respond(400);
 
-    $httpBackend.whenPUT('/authors').respond(function(method, url, data, headers) {
-      return [200, data];
-    });
-    $httpBackend.whenPUT('/badurl').respond(400);
+    $httpBackend
+      .whenPUT('/authors')
+      .respond(function(method, url, data, headers) {
+        return [200, data];
+      });
+    $httpBackend
+      .whenPUT('/badurl')
+      .respond(400);
   });
 
   describe('When calling a valid end-point', function() {
@@ -180,6 +205,44 @@ describe('Angular Rest Support', function() {
       expect(returnedData)
         .toEqual(dataBuilder.authorsResponseTransformer
           .transform(JSON.parse(dataBuilder.allAuthors)));
+    });
+  });
+
+  describe('When setting an error transformer', function() {
+    var getRequest;
+
+    beforeEach(function() {
+      getRequest = arsHelper
+        .post('/authors/failedvalidation', requestData)
+        .setErrorResponseTransformer(dataBuilder.authorsErrorTransformer)
+        .request();
+
+      spyOn(dataBuilder.authorsErrorTransformer, 'transform').and.callThrough();
+    });
+
+    it('The error transformer\'s transform method should be called with the correct error data',
+        function() {
+      $httpBackend.flush();
+      expect(dataBuilder.authorsErrorTransformer.transform)
+        .toHaveBeenCalledWith(JSON.parse(dataBuilder.allAuthorsValidationErrors));
+    });
+
+    it('The transformer\'s error transform method should be called the correct no. of times',
+        function() {
+      expect(dataBuilder.authorsErrorTransformer.transform.calls.count()).toEqual(0);
+      $httpBackend.flush();
+      expect(dataBuilder.authorsErrorTransformer.transform.calls.count()).toEqual(1);
+    });
+
+    it('Should return the correctly transformed error data', function() {
+      var errorData;
+      getRequest.then(function(success) {}, function(fail) {
+        errorData = fail.data;
+      });
+      $httpBackend.flush();
+      expect(errorData)
+        .toEqual(dataBuilder.authorsErrorTransformer
+          .transform(JSON.parse(dataBuilder.allAuthorsValidationErrors)));
     });
   });
 

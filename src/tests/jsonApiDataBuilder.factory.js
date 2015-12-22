@@ -60,6 +60,27 @@ function jsonApiDataBuilder() {
         }
       ]
     }),
+    allAuthorsValidationErrors: JSON.stringify({
+      'errors': [
+        {
+          'title': 'Error 1',
+          'detail': 'There was a problem with the name'
+        },
+        {
+          'title': 'Error 2',
+          'detail': 'There was a problem with the email'
+        }
+      ]
+    }),
+    authorsErrorTransformer: {
+      transform: function(rawData) {
+        var transformedCollection = [];
+        for (var i = 0; i < rawData.errors.length; i++) {
+          transformedCollection.push(rawData.errors[i].detail);
+        }
+        return transformedCollection;
+      }
+    },
     authorsRequestTransformer: {
       transform: function(data) {
         return {
