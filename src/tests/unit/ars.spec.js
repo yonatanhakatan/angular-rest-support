@@ -29,7 +29,7 @@ describe('Angular Rest Support', function() {
       .respond(function(method, url, data, headers) {
         return (headers.token && (headers.token === headersData.token)) ?
           [200, dataBuilder.allAuthors] :
-          400;
+          [400];
       });
     $httpBackend
       .whenGET('/badurl')
