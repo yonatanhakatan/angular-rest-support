@@ -209,10 +209,10 @@ describe('Angular Rest Support', function() {
   });
 
   describe('When setting an error transformer', function() {
-    var getRequest;
+    var postRequest;
 
     beforeEach(function() {
-      getRequest = arsHelper
+      postRequest = arsHelper
         .post('/authors/failedvalidation', requestData)
         .setErrorResponseTransformer(dataBuilder.authorsErrorTransformer)
         .request();
@@ -236,7 +236,7 @@ describe('Angular Rest Support', function() {
 
     it('Should return the correctly transformed error data', function() {
       var errorData;
-      getRequest.then(function(success) {}, function(fail) {
+      postRequest.then(function(success) {}, function(fail) {
         errorData = fail.data;
       });
       $httpBackend.flush();
