@@ -1,5 +1,5 @@
 describe('Angular Rest Support', function() {
-  var $httpBackend;
+  var $cacheFactory, $httpBackend;
   var arsHelper;
   var dataBuilder = jsonApiDataBuilder();
   var httpMethods = ['delete', 'get', 'patch', 'post', 'put'];
@@ -8,7 +8,8 @@ describe('Angular Rest Support', function() {
 
   beforeEach(function() {
     module('ars');
-    inject(function(_$httpBackend_, _arsHelper_) {
+    inject(function(_$cacheFactory_, _$httpBackend_, _arsHelper_) {
+      $cacheFactory = _$cacheFactory_;
       $httpBackend = _$httpBackend_;
       arsHelper = _arsHelper_;
     });
@@ -272,6 +273,27 @@ describe('Angular Rest Support', function() {
       $httpBackend.flush();
       expect(returnedData).toEqual(JSON.parse(dataBuilder.allAuthors));
     });
+  });
+
+  describe('When enabling the default cache for a specific request', function() {
+    var defaultCache, getRequest;
+
+    beforeEach(function() {
+      getRequest = arsHelper
+        .get('/authors')
+        .setCache(true)
+        .request();
+
+      defaultCache = $cacheFactory.get('$http');
+      defaultCache.removeAll();
+    });
+
+    it('The correct data should be stored in the cache', function() {
+      expect(defaultCache.get('/authors')).toBeUndefined();
+      $httpBackend.flush();
+      expect(defaultCache.get('/authors')[1]).toEqual(dataBuilder.allAuthors);
+    });
+
   });
 
 });
