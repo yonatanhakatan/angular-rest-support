@@ -114,39 +114,26 @@ describe('Angular Rest Support', function() {
   });
 
   describe('When setting a request transformer', function() {
-    var transformer = {
-      transform: function(data) {
-        return {
-          'data': {
-            'type': 'authors',
-            'attributes': {
-              'name': data.name,
-              'date_of_birth': data.dob
-            }
-          }
-        };
-      }
-    };
     var postRequest;
 
     beforeEach(function() {
       postRequest = arsHelper
         .post('/authors', requestData)
-        .setRequestTransformer(transformer)
+        .setRequestTransformer(dataBuilder.authorsRequestTransformer)
         .request();
 
-      spyOn(transformer, 'transform').and.callThrough();
+      spyOn(dataBuilder.authorsRequestTransformer, 'transform').and.callThrough();
     });
 
     it('The transformer\'s transform method should be called with the correct data', function() {
       $httpBackend.flush();
-      expect(transformer.transform).toHaveBeenCalledWith(requestData);
+      expect(dataBuilder.authorsRequestTransformer.transform).toHaveBeenCalledWith(requestData);
     });
 
     it('The transformer\'s transform method should be called the correct no. of times', function() {
-      expect(transformer.transform.calls.count()).toEqual(0);
+      expect(dataBuilder.authorsRequestTransformer.transform.calls.count()).toEqual(0);
       $httpBackend.flush();
-      expect(transformer.transform.calls.count()).toEqual(1);
+      expect(dataBuilder.authorsRequestTransformer.transform.calls.count()).toEqual(1);
     });
 
     it('Should return the correct data', function() {
@@ -156,48 +143,32 @@ describe('Angular Rest Support', function() {
           returnedData = success.data;
         });
       $httpBackend.flush();
-      expect(returnedData).toEqual(transformer.transform(requestData));
+      expect(returnedData).toEqual(dataBuilder.authorsRequestTransformer.transform(requestData));
     });
   });
 
   describe('When setting a response transformer', function() {
-    var transformer = {
-      transform: function(rawData) {
-        var transformedCollection = [];
-        for (var i = 0; i < rawData.data.length; i++) {
-          var dataItem = rawData.data[i];
-          transformedCollection.push({
-            id: dataItem.id,
-            createdAt: dataItem.attributes.created_at,
-            dob: dataItem.attributes.date_of_birth,
-            dod: dataItem.attributes.date_of_death,
-            name: dataItem.attributes.name,
-            updatedAt: dataItem.attributes.updated_at
-          });
-        }
-        return transformedCollection;
-      }
-    };
     var getRequest;
 
     beforeEach(function() {
       getRequest = arsHelper
         .get('/authors')
-        .setResponseTransformer(transformer)
+        .setResponseTransformer(dataBuilder.authorsResponseTransformer)
         .request();
 
-      spyOn(transformer, 'transform').and.callThrough();
+      spyOn(dataBuilder.authorsResponseTransformer, 'transform').and.callThrough();
     });
 
     it('The transformer\'s transform method should be called with the correct data', function() {
       $httpBackend.flush();
-      expect(transformer.transform).toHaveBeenCalledWith(JSON.parse(dataBuilder.allAuthors));
+      expect(dataBuilder.authorsResponseTransformer.transform)
+        .toHaveBeenCalledWith(JSON.parse(dataBuilder.allAuthors));
     });
 
     it('The transformer\'s transform method should be called the correct no. of times', function() {
-      expect(transformer.transform.calls.count()).toEqual(0);
+      expect(dataBuilder.authorsResponseTransformer.transform.calls.count()).toEqual(0);
       $httpBackend.flush();
-      expect(transformer.transform.calls.count()).toEqual(1);
+      expect(dataBuilder.authorsResponseTransformer.transform.calls.count()).toEqual(1);
     });
 
     it('Should return the correct data', function() {
@@ -206,7 +177,9 @@ describe('Angular Rest Support', function() {
         returnedData = success.data;
       });
       $httpBackend.flush();
-      expect(returnedData).toEqual(transformer.transform(JSON.parse(dataBuilder.allAuthors)));
+      expect(returnedData)
+        .toEqual(dataBuilder.authorsResponseTransformer
+          .transform(JSON.parse(dataBuilder.allAuthors)));
     });
   });
 

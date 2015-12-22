@@ -59,6 +59,36 @@ function jsonApiDataBuilder() {
           }
         }
       ]
-    })
+    }),
+    authorsRequestTransformer: {
+      transform: function(data) {
+        return {
+          'data': {
+            'type': 'authors',
+            'attributes': {
+              'name': data.name,
+              'date_of_birth': data.dob
+            }
+          }
+        };
+      }
+    },
+    authorsResponseTransformer: {
+      transform: function(rawData) {
+        var transformedCollection = [];
+        for (var i = 0; i < rawData.data.length; i++) {
+          var dataItem = rawData.data[i];
+          transformedCollection.push({
+            id: dataItem.id,
+            createdAt: dataItem.attributes.created_at,
+            dob: dataItem.attributes.date_of_birth,
+            dod: dataItem.attributes.date_of_death,
+            name: dataItem.attributes.name,
+            updatedAt: dataItem.attributes.updated_at
+          });
+        }
+        return transformedCollection;
+      }
+    }
   };
 }
