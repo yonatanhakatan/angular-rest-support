@@ -25,7 +25,6 @@
     this.getDefaultBaseUrl = getDefaultBaseUrl;
     this.setDefaultBaseUrl = setDefaultBaseUrl;
     this.setDefaultHeaders = setDefaultHeaders;
-    this.setDefaultCache = setDefaultCache;
 
     apiHelperFactory.$inject = ['$http'];
 
@@ -107,7 +106,7 @@
           url: requestObj._config.baseUrl + requestObj._config.relativeUrl
         };
 
-        if (requestObj._config.cache) {
+        if (requestObj._config.cache !== null) {
           httpConfig.cache = requestObj._config.cache;
         }
 
@@ -320,15 +319,6 @@
      */
     function setDefaultBaseUrl(baseUrl) {
       providerConfig.defaultBaseUrl = baseUrl;
-    }
-
-    /**
-     * Set the default cache for all requests
-     * @param {(boolean|Object)} cache  If true, a default $http cache will be used to cache the GET
-     * request, otherwise if a cache instance built with $cacheFactory, this cache will be used for caching.
-     */
-    function setDefaultCache(cache) {
-      $httpProvider.defaults.cache = cache;
     }
 
     /**
