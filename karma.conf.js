@@ -8,12 +8,18 @@ module.exports = function(config) {
       'src/**/*.js'
     ],
 
+    preprocessors: {
+      'src/!(tests)/**/*.js': ['coverage']
+    },
+
     autoWatch: true,
 
     frameworks: ['jasmine'],
 
     browsers: ['Firefox'],
 
-    singleRun: true
+    singleRun: true,
+
+    reporters: ['progress', 'coverage']
   });
 };

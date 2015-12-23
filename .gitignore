@@ -10,3 +10,6 @@ bower_components
 
 # Npm
 node_modules
+
+# Karma Coverage (Istanbul)
+coverage
