@@ -166,27 +166,29 @@ describe('Angular Rest Support', function() {
     }
   });
 
-  describe('When setting a request transformer', function() {
+  describe('When setting a default request transformer', function() {
     var postRequest;
 
     beforeEach(function() {
+      arsHelper.setDefaultRequestTransformer(dataBuilder.authorsDefaultRequestTransformer);
+      spyOn(dataBuilder.authorsDefaultRequestTransformer, 'transform').and.callThrough();
       postRequest = arsHelper
         .post('/authors', requestData)
-        .setRequestTransformer(dataBuilder.authorsRequestTransformer)
         .request();
-
-      spyOn(dataBuilder.authorsRequestTransformer, 'transform').and.callThrough();
     });
 
-    it('The transformer\'s transform method should be called with the correct data', function() {
+    it('The default transformer\'s transform method should be called with the correct data',
+        function() {
       $httpBackend.flush();
-      expect(dataBuilder.authorsRequestTransformer.transform).toHaveBeenCalledWith(requestData);
+      expect(dataBuilder.authorsDefaultRequestTransformer.transform)
+        .toHaveBeenCalledWith(requestData);
     });
 
-    it('The transformer\'s transform method should be called the correct no. of times', function() {
-      expect(dataBuilder.authorsRequestTransformer.transform.calls.count()).toEqual(0);
+    it('The default transformer\'s transform method should be called the correct no. of times',
+        function() {
+      expect(dataBuilder.authorsDefaultRequestTransformer.transform.calls.count()).toEqual(0);
       $httpBackend.flush();
-      expect(dataBuilder.authorsRequestTransformer.transform.calls.count()).toEqual(1);
+      expect(dataBuilder.authorsDefaultRequestTransformer.transform.calls.count()).toEqual(1);
     });
 
     it('Should return the correct data', function() {
@@ -196,8 +198,62 @@ describe('Angular Rest Support', function() {
           returnedData = success.data;
         });
       $httpBackend.flush();
-      expect(returnedData).toEqual(dataBuilder.authorsRequestTransformer.transform(requestData));
+      expect(returnedData)
+        .toEqual(dataBuilder.authorsDefaultRequestTransformer.transform(requestData));
     });
+
+  });
+
+  describe('When setting a request transformer for an individual request', function() {
+    var postRequest;
+
+    beforeEach(function() {
+      // Testing with the default transformer set too
+      arsHelper.setDefaultRequestTransformer(dataBuilder.authorsDefaultRequestTransformer);
+      spyOn(dataBuilder.authorsRequestTransformer, 'transform').and.callThrough();
+      postRequest = arsHelper
+        .post('/authors', requestData)
+        .setRequestTransformer(dataBuilder.authorsRequestTransformer)
+        .request();
+    });
+
+    it('The transformer\'s transform method should be called with the correct data',
+        function() {
+      $httpBackend.flush();
+      expect(dataBuilder.authorsRequestTransformer.transform)
+        .toHaveBeenCalledWith(requestData);
+    });
+
+    it('The transformer\'s transform method should be called the correct no. of times',
+        function() {
+      expect(dataBuilder.authorsRequestTransformer.transform.calls.count()).toEqual(0);
+      $httpBackend.flush();
+      expect(dataBuilder.authorsRequestTransformer.transform.calls.count()).toEqual(1);
+    });
+
+    it('Should return the correct data but future requests should revert', function() {
+      var returnedData;
+      postRequest
+        .then(function(success) {
+          returnedData = success.data;
+        });
+      $httpBackend.flush();
+      expect(returnedData)
+        .toEqual(dataBuilder.authorsRequestTransformer.transform(requestData));
+
+      returnedData = null;
+
+      arsHelper
+        .post('/authors', requestData)
+        .request()
+        .then(function(success) {
+          returnedData = success.data;
+        });
+      $httpBackend.flush();
+      expect(returnedData)
+        .toEqual(dataBuilder.authorsDefaultRequestTransformer.transform(requestData));
+    });
+
   });
 
   describe('When setting a response transformer', function() {

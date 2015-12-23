@@ -194,6 +194,14 @@ function jsonApiDataBuilder() {
         }
       ]
     }),
+    authorsDefaultRequestTransformer: {
+      transform: function(data) {
+        return {
+          'name': data.name,
+          'date_of_birth': data.dob
+        };
+      }
+    },
     authorsErrorTransformer: {
       transform: function(rawData) {
         var transformedCollection = [];
