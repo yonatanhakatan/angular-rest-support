@@ -355,30 +355,29 @@ describe('Angular Rest Support', function() {
 
   });
 
-  describe('When setting an error transformer', function() {
+  describe('When setting a default error transformer', function() {
     var postRequest;
 
     beforeEach(function() {
+      arsHelper.setDefaultErrorResponseTransformer(dataBuilder.authorsDefaultErrorTransformer);
+      spyOn(dataBuilder.authorsDefaultErrorTransformer, 'transform').and.callThrough();
       postRequest = arsHelper
         .post('/authors/failedvalidation', requestData)
-        .setErrorResponseTransformer(dataBuilder.authorsErrorTransformer)
         .request();
-
-      spyOn(dataBuilder.authorsErrorTransformer, 'transform').and.callThrough();
     });
 
-    it('The error transformer\'s transform method should be called with the correct error data',
+    it('The default transformer\'s transform method should be called with the correct error data',
         function() {
       $httpBackend.flush();
-      expect(dataBuilder.authorsErrorTransformer.transform)
+      expect(dataBuilder.authorsDefaultErrorTransformer.transform)
         .toHaveBeenCalledWith(JSON.parse(dataBuilder.allAuthorsValidationErrors));
     });
 
-    it('The transformer\'s error transform method should be called the correct no. of times',
+    it('The default transformer\'s transform method should be called the correct no. of times',
         function() {
-      expect(dataBuilder.authorsErrorTransformer.transform.calls.count()).toEqual(0);
+      expect(dataBuilder.authorsDefaultErrorTransformer.transform.calls.count()).toEqual(0);
       $httpBackend.flush();
-      expect(dataBuilder.authorsErrorTransformer.transform.calls.count()).toEqual(1);
+      expect(dataBuilder.authorsDefaultErrorTransformer.transform.calls.count()).toEqual(1);
     });
 
     it('Should return the correctly transformed error data', function() {
@@ -388,9 +387,70 @@ describe('Angular Rest Support', function() {
       });
       $httpBackend.flush();
       expect(errorData)
-        .toEqual(dataBuilder.authorsErrorTransformer
-          .transform(JSON.parse(dataBuilder.allAuthorsValidationErrors)));
+        .toEqual(
+          dataBuilder.authorsDefaultErrorTransformer
+            .transform(JSON.parse(dataBuilder.allAuthorsValidationErrors))
+        );
     });
+
+  });
+
+  describe('When setting an error transformer for an individual request', function() {
+    var postRequest;
+
+    beforeEach(function() {
+      // Testing with the default transformer set too
+      arsHelper.setDefaultErrorResponseTransformer(dataBuilder.authorsDefaultErrorTransformer);
+      spyOn(dataBuilder.authorsErrorTransformer, 'transform').and.callThrough();
+      postRequest = arsHelper
+        .post('/authors/failedvalidation', requestData)
+        .setErrorResponseTransformer(dataBuilder.authorsErrorTransformer)
+        .request();
+    });
+
+    it('The transformer\'s transform method should be called with the correct data',
+        function() {
+      $httpBackend.flush();
+      expect(dataBuilder.authorsErrorTransformer.transform)
+        .toHaveBeenCalledWith(JSON.parse(dataBuilder.allAuthorsValidationErrors));
+    });
+
+    it('The transformer\'s transform method should be called the correct no. of times',
+        function() {
+      expect(dataBuilder.authorsErrorTransformer.transform.calls.count()).toEqual(0);
+      $httpBackend.flush();
+      expect(dataBuilder.authorsErrorTransformer.transform.calls.count()).toEqual(1);
+    });
+
+    it('Should return the correctly transformed error data but future requests should revert',
+        function() {
+      var errorData;
+      postRequest.then(function(success) {}, function(fail) {
+        errorData = fail.data;
+      });
+      $httpBackend.flush();
+      expect(errorData)
+        .toEqual(
+          dataBuilder.authorsErrorTransformer
+            .transform(JSON.parse(dataBuilder.allAuthorsValidationErrors))
+        );
+
+      errorData = null;
+
+      arsHelper
+        .post('/authors/failedvalidation', requestData)
+        .request()
+        .then(function(success) {}, function(fail) {
+          errorData = fail.data;
+        });
+      $httpBackend.flush();
+      expect(errorData)
+        .toEqual(
+          dataBuilder.authorsDefaultErrorTransformer
+            .transform(JSON.parse(dataBuilder.allAuthorsValidationErrors))
+        );
+    });
+
   });
 
   describe('After the default header is set', function() {

@@ -194,6 +194,15 @@ function jsonApiDataBuilder() {
         }
       ]
     }),
+    authorsDefaultErrorTransformer: {
+      transform: function(rawData) {
+        var transformedCollection = [];
+        for (var i = 0; i < rawData.errors.length; i++) {
+          transformedCollection.push(rawData.errors[i].detail);
+        }
+        return {errors: transformedCollection};
+      }
+    },
     authorsDefaultRequestTransformer: {
       transform: function(data) {
         return {
