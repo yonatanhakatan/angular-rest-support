@@ -202,6 +202,23 @@ function jsonApiDataBuilder() {
         };
       }
     },
+    authorsDefaultResponseTransformer: {
+      transform: function(rawData) {
+        var transformedCollection = [];
+        for (var i = 0; i < rawData.data.length; i++) {
+          var dataItem = rawData.data[i];
+          transformedCollection.push({
+            _id: dataItem.id,
+            _createdAt: dataItem.attributes.created_at,
+            _dob: dataItem.attributes.date_of_birth,
+            _dod: dataItem.attributes.date_of_death,
+            _name: dataItem.attributes.name,
+            _updatedAt: dataItem.attributes.updated_at
+          });
+        }
+        return transformedCollection;
+      }
+    },
     authorsErrorTransformer: {
       transform: function(rawData) {
         var transformedCollection = [];
