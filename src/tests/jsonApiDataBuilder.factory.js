@@ -72,6 +72,128 @@ function jsonApiDataBuilder() {
         }
       ]
     }),
+    allBooks: JSON.stringify({
+      'data': [
+        {
+          'id': '1',
+          'type': 'books',
+          'attributes': {
+            'date_published': '1954-07-29',
+            'title': 'The Fellowship of the Ring',
+            'created_at': '2015-12-23 10:36:19',
+            'updated_at': '2015-12-23 10:36:19'
+          },
+          'relationships': {
+            'chapters': {
+              'links': {
+                'self': '/v1/books/1/relationships/chapters',
+                'related': '/v1/books/1/chapters'
+              }
+            },
+            'firstChapter': {
+              'links': {
+                'self': '/v1/books/1/relationships/firstChapter',
+                'related': '/v1/books/1/firstChapter'
+              }
+            },
+            'series': {
+              'links': {
+                'self': '/v1/books/1/relationships/series',
+                'related': '/v1/books/1/series'
+              },
+              'data': {
+                'id': '1',
+                'type': 'series'
+              }
+            },
+            'author': {
+              'links': {
+                'self': '/v1/books/1/relationships/author',
+                'related': '/v1/books/1/author'
+              },
+              'data': {
+                'id': '1',
+                'type': 'authors'
+              }
+            },
+            'stores': {
+              'links': {
+                'self': '/v1/books/1/relationships/stores',
+                'related': '/v1/books/1/stores'
+              }
+            },
+            'photos': {
+              'links': {
+                'self': '/v1/books/1/relationships/photos',
+                'related': '/v1/books/1/photos'
+              }
+            }
+          },
+          'links': {
+            'self': '/v1/books/1'
+          }
+        },
+        {
+          'id': '2',
+          'type': 'books',
+          'attributes': {
+            'date_published': '1954-11-11',
+            'title': 'The Two Towers',
+            'created_at': '2015-12-23 10:36:19',
+            'updated_at': '2015-12-23 10:36:19'
+          },
+          'relationships': {
+            'chapters': {
+              'links': {
+                'self': '/v1/books/2/relationships/chapters',
+                'related': '/v1/books/2/chapters'
+              }
+            },
+            'firstChapter': {
+              'links': {
+                'self': '/v1/books/2/relationships/firstChapter',
+                'related': '/v1/books/2/firstChapter'
+              }
+            },
+            'series': {
+              'links': {
+                'self': '/v1/books/2/relationships/series',
+                'related': '/v1/books/2/series'
+              },
+              'data': {
+                'id': '1',
+                'type': 'series'
+              }
+            },
+            'author': {
+              'links': {
+                'self': '/v1/books/2/relationships/author',
+                'related': '/v1/books/2/author'
+              },
+              'data': {
+                'id': '1',
+                'type': 'authors'
+              }
+            },
+            'stores': {
+              'links': {
+                'self': '/v1/books/2/relationships/stores',
+                'related': '/v1/books/2/stores'
+              }
+            },
+            'photos': {
+              'links': {
+                'self': '/v1/books/2/relationships/photos',
+                'related': '/v1/books/2/photos'
+              }
+            }
+          },
+          'links': {
+            'self': '/v1/books/2'
+          }
+        }
+      ]
+    }),
     authorsErrorTransformer: {
       transform: function(rawData) {
         var transformedCollection = [];

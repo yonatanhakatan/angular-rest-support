@@ -1,13 +1,19 @@
 describe('Angular Rest Support', function() {
   var $cacheFactory, $httpBackend;
-  var arsHelper;
+  var arsHelper, arsHelperProvider;
+  var baseUrl1 = '';
+  var baseUrl2 = 'http://domain1.com';
+  var baseUrl3 = 'http://domain2.com';
   var dataBuilder = jsonApiDataBuilder();
+  var headersData = {token: 'abc123'};
   var httpMethods = ['delete', 'get', 'patch', 'post', 'put'];
   var requestData = {name: 'John Doe', dob: '1982-01-01'};
-  var headersData = {token: 'abc123'};
 
   beforeEach(function() {
-    module('ars');
+    module('ars', function(_arsHelperProvider_) {
+      arsHelperProvider = _arsHelperProvider_;
+    });
+
     inject(function(_$cacheFactory_, _$httpBackend_, _arsHelper_) {
       $cacheFactory = _$cacheFactory_;
       $httpBackend = _$httpBackend_;
@@ -16,56 +22,62 @@ describe('Angular Rest Support', function() {
 
     // Mock the Data
     $httpBackend
-      .whenDELETE('/authors')
+      .whenDELETE(baseUrl1 + '/authors')
       .respond(200);
     $httpBackend
-      .whenDELETE('/badurl')
+      .whenDELETE(baseUrl1 + '/badurl')
       .respond(400);
 
     $httpBackend
-      .whenGET('/authors')
+      .whenGET(baseUrl1 + '/authors')
       .respond(200, dataBuilder.allAuthors);
     $httpBackend
-      .whenGET('/authors/private')
+      .whenGET(baseUrl1 + '/authors/private')
       .respond(function(method, url, data, headers) {
         return (headers.token && (headers.token === headersData.token)) ?
           [200, dataBuilder.allAuthors] :
           [400];
       });
     $httpBackend
-      .whenGET('/badurl')
+      .whenGET(baseUrl1 + '/badurl')
       .respond(400);
+    $httpBackend
+      .whenGET(baseUrl2 + '/test')
+      .respond(200, dataBuilder.allAuthors);
+    $httpBackend
+      .whenGET(baseUrl3 + '/test')
+      .respond(200, dataBuilder.allBooks);
 
     $httpBackend
-      .whenPATCH('/authors')
+      .whenPATCH(baseUrl1 + '/authors')
       .respond(function(method, url, data, headers) {
         return [200, data];
       });
     $httpBackend
-      .whenPATCH('/badurl')
+      .whenPATCH(baseUrl1 + '/badurl')
       .respond(400);
 
     $httpBackend
-      .whenPOST('/authors')
+      .whenPOST(baseUrl1 + '/authors')
       .respond(function(method, url, data, headers) {
         return [200, data];
       });
     $httpBackend
-      .whenPOST('/authors/failedvalidation')
+      .whenPOST(baseUrl1 + '/authors/failedvalidation')
       .respond(function(method, url, data, headers) {
         return [422, dataBuilder.allAuthorsValidationErrors];
       });
     $httpBackend
-      .whenPOST('/badurl')
+      .whenPOST(baseUrl1 + '/badurl')
       .respond(400);
 
     $httpBackend
-      .whenPUT('/authors')
+      .whenPUT(baseUrl1 + '/authors')
       .respond(function(method, url, data, headers) {
         return [200, data];
       });
     $httpBackend
-      .whenPUT('/badurl')
+      .whenPUT(baseUrl1 + '/badurl')
       .respond(400);
   });
 
@@ -293,7 +305,62 @@ describe('Angular Rest Support', function() {
       $httpBackend.flush();
       expect(defaultCache.get('/authors')[1]).toEqual(dataBuilder.allAuthors);
     });
+  });
 
+  describe('Before the default base url is set', function() {
+
+    it('The correct fallback base url should be set', function() {
+      expect(arsHelperProvider.getDefaultBaseUrl()).toEqual('');
+    });
+
+  });
+
+  describe('After the default base url is set', function() {
+
+    beforeEach(function() {
+      arsHelperProvider.setDefaultBaseUrl(baseUrl2);
+    });
+
+    it('The correct default base url should be set', function() {
+      expect(arsHelperProvider.getDefaultBaseUrl()).toEqual(baseUrl2);
+    });
+
+    it('The correct data should be returned', function() {
+      var returnedData;
+      arsHelper
+        .get('/test')
+        .request()
+        .then(function(success) {
+          returnedData = success.data;
+        });
+      $httpBackend.flush();
+      expect(returnedData).toEqual(JSON.parse(dataBuilder.allAuthors));
+    });
+
+    describe('After the base url is set for an individual request', function() {
+      it('The correct data should be returned but future requests should revert', function() {
+        var returnedData;
+        arsHelper
+          .get('/test')
+          .setBaseUrl(baseUrl3)
+          .request()
+          .then(function(success) {
+            returnedData = success.data;
+          });
+        $httpBackend.flush();
+        expect(returnedData).toEqual(JSON.parse(dataBuilder.allBooks));
+
+        returnedData = null;
+        arsHelper
+          .get('/test')
+          .request()
+          .then(function(success) {
+            returnedData = success.data;
+          });
+        $httpBackend.flush();
+        expect(returnedData).toEqual(JSON.parse(dataBuilder.allAuthors));
+      });
+    });
   });
 
 });
