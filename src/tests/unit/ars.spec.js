@@ -5,7 +5,8 @@ describe('Angular Rest Support', function() {
   var baseUrl2 = 'http://domain1.com';
   var baseUrl3 = 'http://domain2.com';
   var dataBuilder = jsonApiDataBuilder();
-  var headersData = {token: 'abc123'};
+  var headersData1 = {token: 'abc123'};
+  var headersData2 = {token: 'abc456'};
   var httpMethods = ['delete', 'get', 'patch', 'post', 'put'];
   var requestData = {name: 'John Doe', dob: '1982-01-01'};
 
@@ -34,9 +35,15 @@ describe('Angular Rest Support', function() {
     $httpBackend
       .whenGET(baseUrl1 + '/authors/private')
       .respond(function(method, url, data, headers) {
-        return (headers.token && (headers.token === headersData.token)) ?
+        return (
+          headers.token && (headers.token === headersData1.token) ?
           [200, dataBuilder.allAuthors] :
-          [400];
+          (
+            (headers.token && (headers.token === headersData2.token)) ?
+            [200, dataBuilder.allBooks] :
+            [400]
+          )
+        );
       });
     $httpBackend
       .whenGET(baseUrl1 + '/badurl')
@@ -267,23 +274,47 @@ describe('Angular Rest Support', function() {
     });
   });
 
-  describe('When setting the header for a specific request', function() {
-    var getRequest;
+  describe('After the default header is set', function() {
 
     beforeEach(function() {
-      getRequest = arsHelper
-        .get('/authors/private')
-        .setHeaders(headersData)
-        .request();
+      arsHelperProvider.setDefaultHeaders(headersData1);
     });
 
-    it('Should return a successful response', function() {
+    it('The correct data should be returned', function() {
       var returnedData;
-      getRequest.then(function(success) {
-        returnedData = success.data;
-      });
+      arsHelper
+        .get('/authors/private')
+        .request()
+        .then(function(success) {
+          returnedData = success.data;
+        });
       $httpBackend.flush();
       expect(returnedData).toEqual(JSON.parse(dataBuilder.allAuthors));
+    });
+
+    describe('After the header is set for an individual request', function() {
+      it('The correct data should be returned but future requests should revert', function() {
+        var returnedData;
+        arsHelper
+          .get('/authors/private')
+          .setHeaders(headersData2)
+          .request()
+          .then(function(success) {
+            returnedData = success.data;
+          });
+        $httpBackend.flush();
+        expect(returnedData).toEqual(JSON.parse(dataBuilder.allBooks));
+
+        returnedData = null;
+        arsHelper
+          .get('/authors/private')
+          .request()
+          .then(function(success) {
+            returnedData = success.data;
+          });
+        $httpBackend.flush();
+        expect(returnedData).toEqual(JSON.parse(dataBuilder.allAuthors));
+      });
     });
   });
 
