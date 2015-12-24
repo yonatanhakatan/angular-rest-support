@@ -1,6 +1,6 @@
 {
   "name": "angular-rest-support",
-  "version": "0.1.0",
+  "version": "0.0.1",
   "description": "Support module for consuming restful API's",
   "author": "Jonny Levy",
   "license": "MIT",
@@ -10,5 +10,14 @@
   },
   "devDependencies": {
     "angular-mocks": "^1.4.7"
-  }
+  },
+  "ignore": [
+    ".*",
+    "gulpfile.js",
+    "karma.conf.js",
+    "LICENSE",
+    "package.json",
+    "src",
+    "README.md"
+  ]
 }
