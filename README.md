@@ -1,5 +1,4 @@
 # Angular Rest Support
-___
 Angular Rest Support is an AngularJS service that makes interacting with RESTful Api's a bit friendlier. Built on Angular's $http service, it provides a very easy way to transform requests and responses.
 
 ## Installing
