@@ -290,3 +290,47 @@ arsHelper
     // fail is an Angular $http response object. See https://docs.angularjs.org/api/ng/service/$http
   });
 ```
+
+### Transformers
+You can set set default transformers which will be applied to all requests made with Angular Rest Support. You can also set them on a per-request basis. These transformers can be applied to request data that is sent to your API and also to response data and error response data that is returned from your API.
+
+One of the benefits of using transformers is you can decouple the structure of your API's response data from how your app actually manipulates the data. As an example, if your API is returning data formatted to the (JSON API spec)[http://jsonapi.org/] but you decided to switch to a different spec sometime in the future, you would just need to update your transformers to work with the new response. No need to keep changing your code to match the response. 
+
+Your transformer can be a Service or a Factory, there is just one rule, it **must** contain a method named **transform**. The transform method will receive the raw data as an argument, which will be the request data in the case of request transformers or the response data from the api in the case of response and error response transformers.
+
+#####Example:
+
+If your API is returning this:
+```json
+{
+  "data": {
+    "id": "1",
+    "type": "books",
+    "attributes": {
+        "title": "Book 1",
+        "page_count": 200
+    }
+  }
+}
+```
+
+Then your response transformer could look like this:
+
+```javascript
+angular
+  .module('yourApplication')
+  .service('yourTransformer', function() {
+    this.transform = transform;
+
+    function transform(rawData) {
+      var rawItem = rawData.data;
+      return {
+        id: rawItem.id,
+        title: rawItem.attributes.title,
+        pageCount: rawItem.attributes.page_count
+      };
+    }
+
+  });
+    
+```
