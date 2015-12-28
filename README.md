@@ -36,7 +36,6 @@ angular
 
 The available provider methods are as follows:
 ####setDefaultBaseUrl(baseUrl)
-___
 #####Description
 Sets the base url for all API calls. If this is not set, API calls will be made to the same domain that the app is located.
 #####Parameters
@@ -50,7 +49,6 @@ undefined
 arsProvider.setDefaultBaseUrl("http://abc.com/");
 ```
 ####getDefaultBaseUrl()
-___
 #####Description
 Gets the base url for all API calls
 #####Parameters
@@ -63,7 +61,6 @@ arsProvider.getDefaultBaseUrl();
 ```
 
 ####setDefaultHeaders(headers, httpMethod)
-___
 #####Description
 Sets the default headers for all API calls.
 #####Parameters
@@ -94,7 +91,6 @@ angular
 There are some transformer methods which are suited to being called in your app's run call:
 
 ####setDefaultErrorResponseTransformer(defaultErrorResponseTransformer)
-___
 #####Description
 Sets the default error response transformer for all requests. See the [Transformers](#user-content-transformers) section for more.
 #####Parameters
@@ -109,7 +105,6 @@ ars.setDefaultErrorResponseTransformer(yourErrorTransformer);
 ```
 
 ####setDefaultRequestTransformer(defaultRequestTransformer)
-___
 #####Description
 Sets the default request transformer for all requests. See the [Transformers](#user-content-transformers) section for more.
 #####Parameters
@@ -124,7 +119,6 @@ ars.setDefaultRequestTransformer(yourRequestTransformer);
 ```
 
 ####setDefaultResponseTransformer(defaultResponseTransformer)
-___
 #####Description
 Sets the default response transformer for all requests. See the [Transformers](#user-content-transformers) section for more.
 #####Parameters
@@ -147,7 +141,6 @@ To begin interacting with your API, you need to prepare the request with one of 
 ####patch(relativeUrl, requestData)
 ####put(relativeUrl, requestData)
 ####post(relativeUrl, requestData)
-___
 #####Description
 These methods all follow the same structure, and prepare a request with the corresponding HTTP method type i.e. DELETE, GET, PATCH, PUT and POST
 #####Parameters
@@ -168,7 +161,6 @@ ars.post("books", { type: 'hardback' })
 Once you have prepared the request, you can call any of these methods:
 
 ####setBaseUrl(baseUrl)
-___
 #####Description
 Sets the base url for the request. If this is not set, the base url will revert to the default base url set with setDefaultBaseUrl().
 #####Parameters
@@ -185,7 +177,6 @@ ars
 ```
 
 ####setCache(cache)
-___
 #####Description
 Sets the cache for the request. Only applies to GET requests.
 #####Parameters
@@ -202,7 +193,6 @@ ars
 ```
 
 ####setHeaders(headers)
-___
 #####Description
 Sets the headers for the request.
 #####Parameters
@@ -219,7 +209,6 @@ ars
 ```
 
 ####setErrorResponseTransformer(errorResponseTransformer)
-___
 #####Description
 Sets the error response transformer for the request. See the [Transformers](#user-content-transformers) section for more.
 #####Parameters
@@ -236,7 +225,6 @@ ars
 ```
 
 ####setRequestTransformer(requestTransformer)
-___
 #####Description
 Sets the request transformer for the request. See the [Transformers](#user-content-transformers) section for more.
 #####Parameters
@@ -253,7 +241,6 @@ ars
 ```
 
 ####setResponseTransformer(responseTransformer)
-___
 #####Description
 Sets the response transformer for the request. See the [Transformers](#user-content-transformers) section for more.
 #####Parameters
@@ -272,7 +259,6 @@ ars
 ### Performing the request
 Once you are ready to actually call the API, there is one method left to call:
 ####request()
-___
 #####Description
 Performs the request to make the actual call to your API.
 #####Parameters
