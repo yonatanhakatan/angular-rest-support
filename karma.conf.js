@@ -20,7 +20,7 @@ module.exports = function(config) {
 
     singleRun: true,
 
-    reporters: ['progress', 'coverage'],
+    reporters: ['dots', 'coverage'],
 
     coverageReporter: {
       // specify a common output directory

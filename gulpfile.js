@@ -2,6 +2,7 @@ var del = require('del');
 var gulp = require('gulp');
 var plugins = require('gulp-load-plugins')();
 var runSequence = require('run-sequence');
+var Server = require('karma').Server;
 
 /**
  * Paths
@@ -51,6 +52,27 @@ gulp.task('scripts', function() {
 });
 
 /**
+ * Run test once and exit
+ */
+gulp.task('test', function (done) {
+  return new Server({
+    autoWatch: false,
+    configFile: __dirname + '/karma.conf.js',
+    singleRun: true
+  }, done).start();
+});
+
+/**
+ * Run scripts then test
+ */
+gulp.task('tested-scripts', function (done) {
+  return runSequence(
+    'scripts',
+    'test'
+  );
+});
+
+/**
  * Watch various files and run appropriate task
  */
 gulp.task('watch', function() {
@@ -58,7 +80,7 @@ gulp.task('watch', function() {
   gulp.watch('gulpfile.js', ['dev']);
 
   // Watch .js files
-  gulp.watch(srcFolder + '**/*.js', ['scripts']);
+  gulp.watch(srcFolder + '**/*.js', ['tested-scripts']);
 
 });
 
@@ -68,6 +90,6 @@ gulp.task('watch', function() {
 gulp.task('default', ['clean'], function() {
   return runSequence(
     'bower',
-    'scripts'
+    'tested-scripts'
   );
 });
