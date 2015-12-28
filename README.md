@@ -111,7 +111,7 @@ ars.setDefaultErrorResponseTransformer(yourErrorTransformer);
 ####setDefaultRequestTransformer(defaultRequestTransformer)
 ___
 #####Description
-Sets the default request transformer for all requests. See the Transformers section for more.
+Sets the default request transformer for all requests. See the [Transformers](#user-content-transformers) section for more.
 #####Parameters
 Param  | Type                | Description | Required
 ------ | ------------------- | ------------ | ------------
@@ -126,7 +126,7 @@ ars.setDefaultRequestTransformer(yourRequestTransformer);
 ####setDefaultResponseTransformer(defaultResponseTransformer)
 ___
 #####Description
-Sets the default response transformer for all requests. See the Transformers section for more.
+Sets the default response transformer for all requests. See the [Transformers](#user-content-transformers) section for more.
 #####Parameters
 Param  | Type                | Description | Required
 ------ | ------------------- | ------------ | ------------
@@ -221,7 +221,7 @@ ars
 ####setErrorResponseTransformer(errorResponseTransformer)
 ___
 #####Description
-Sets the error response transformer for the request. See the Transformers section for more.
+Sets the error response transformer for the request. See the [Transformers](#user-content-transformers) section for more.
 #####Parameters
 Param  | Type                | Description | Required
 ------ | ------------------- | ------------ | ------------
@@ -238,7 +238,7 @@ ars
 ####setRequestTransformer(requestTransformer)
 ___
 #####Description
-Sets the request transformer for the request. See the Transformers section for more.
+Sets the request transformer for the request. See the [Transformers](#user-content-transformers) section for more.
 #####Parameters
 Param  | Type                | Description | Required
 ------ | ------------------- | ------------ | ------------
@@ -255,7 +255,7 @@ ars
 ####setResponseTransformer(responseTransformer)
 ___
 #####Description
-Sets the response transformer for the request. See the Transformers section for more.
+Sets the response transformer for the request. See the [Transformers](#user-content-transformers) section for more.
 #####Parameters
 Param  | Type                | Description | Required
 ------ | ------------------- | ------------ | ------------
