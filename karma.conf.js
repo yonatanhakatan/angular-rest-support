@@ -20,6 +20,15 @@ module.exports = function(config) {
 
     singleRun: true,
 
-    reporters: ['progress', 'coverage']
+    reporters: ['progress', 'coverage'],
+
+    coverageReporter: {
+      // specify a common output directory
+      dir: './coverage',
+      reporters: [
+        {type: 'html', subdir: 'report-html'},
+        {type: 'lcov', subdir: 'report-lcov'}
+      ]
+    }
   });
 };

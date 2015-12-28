@@ -11,6 +11,7 @@
   "homepage": "https://github.com/yonatanhakatan/angular-rest-support",
   "devDependencies": {
     "bower": "^1.6.4",
+    "coveralls": "^2.11.6",
     "del": "^2.0.2",
     "gulp": "^3.9.0",
     "gulp-bower": "^0.0.10",
