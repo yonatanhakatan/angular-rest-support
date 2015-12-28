@@ -24,6 +24,7 @@ angular
 ## Usage
 
 ### Config Phase
+---
 Angular Rest Support has certain methods that can be only be called at the config phase of the Angular lifecycle. To use these methods, inject the `arsProvider` into your config:
 
 ```javascript
@@ -78,6 +79,7 @@ arsProvider.setDefaultHeaders({ 'Authorization': 'Bearer 1a2b3c4d5e' });
 arsProvider.setDefaultHeaders({ 'Authorization': 'Bearer 1a2b3c4d5e' }, 'post');
 ```
 ### Run Phase
+---
 Angular Rest Support also has certain methods that can be only be called at the run phase of the Angular lifecycle. To use these methods, inject the `ars` factory into your controller/service/factory/run:
 
 ```javascript
@@ -133,7 +135,7 @@ ars.setDefaultResponseTransformer(yourResponseTransformer);
 ```
 
 ###Preparing requests
-
+---
 To begin interacting with your API, you need to prepare the request with one of the following methods:
 
 ####delete(relativeUrl, requestData)
@@ -157,7 +159,8 @@ ars.get("books")
 // With request data
 ars.post("books", { type: 'hardback' })
 ```
-### Post-Prep
+### Post-Preparation
+---
 Once you have prepared the request, you can call any of these methods:
 
 ####setBaseUrl(baseUrl)
@@ -257,6 +260,7 @@ ars
 ```
 
 ### Performing the request
+---
 Once you are ready to actually call the API, there is one method left to call:
 ####request()
 #####Description
@@ -278,6 +282,7 @@ ars
 ```
 
 ### Transformers
+---
 You can set set default transformers which will be applied to all requests made with Angular Rest Support. You can also set them on a per-request basis. These transformers can be applied to request data that is sent to your API and also to response data and error response data that is returned from your API.
 
 One of the benefits of using transformers is you can decouple the structure of your API's response data from how your app actually manipulates the data. As an example, if your API is returning data formatted to the (JSON API spec)[http://jsonapi.org/] but you decided to switch to a different spec sometime in the future, you would just need to update your transformers to work with the new response. No need to keep changing your code to match the response. 
