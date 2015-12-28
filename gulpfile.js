@@ -56,7 +56,6 @@ gulp.task('scripts', function() {
  */
 gulp.task('test', function (done) {
   return new Server({
-    autoWatch: false,
     configFile: __dirname + '/karma.conf.js',
     singleRun: true
   }, done).start();
