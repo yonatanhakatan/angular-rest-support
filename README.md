@@ -21,6 +21,7 @@ angular
   .module('yourapplication', ['ars']);
 ```
 
+[Back to top](#user-content-angular-rest-support)
 ## Usage
 
 ### Config Phase
@@ -78,6 +79,9 @@ arsProvider.setDefaultHeaders({ 'Authorization': 'Bearer 1a2b3c4d5e' });
 // Header will be sent only for POST requests
 arsProvider.setDefaultHeaders({ 'Authorization': 'Bearer 1a2b3c4d5e' }, 'post');
 ```
+
+[Back to top](#user-content-angular-rest-support)
+
 ### Run Phase
 ---
 Angular Rest Support also has certain methods that can be only be called at the run phase of the Angular lifecycle. To use these methods, inject the `ars` factory into your controller/service/factory/run:
@@ -134,6 +138,8 @@ The Angular Rest Support factory (Object)
 ars.setDefaultResponseTransformer(yourResponseTransformer);
 ```
 
+[Back to top](#user-content-angular-rest-support)
+
 ###Preparing requests
 ---
 To begin interacting with your API, you need to prepare the request with one of the following methods:
@@ -159,6 +165,9 @@ ars.get("books")
 // With request data
 ars.post("books", { type: 'hardback' })
 ```
+
+[Back to top](#user-content-angular-rest-support)
+
 ### Post-Preparation
 ---
 Once you have prepared the request, you can call any of these methods:
@@ -259,6 +268,8 @@ ars
   .setResponseTransformer(yourResponseTransformer);
 ```
 
+[Back to top](#user-content-angular-rest-support)
+
 ### Performing the request
 ---
 Once you are ready to actually call the API, there is one method left to call:
@@ -280,6 +291,8 @@ ars
     // fail is an Angular $http response object. See https://docs.angularjs.org/api/ng/service/$http
   });
 ```
+
+[Back to top](#user-content-angular-rest-support)
 
 ### Transformers
 ---
@@ -388,3 +401,5 @@ ars
   .setRequestTransformer(yourTransformer)
   .request();
 ```
+
+[Back to top](#user-content-angular-rest-support)
