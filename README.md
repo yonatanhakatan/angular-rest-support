@@ -1,4 +1,6 @@
 # Angular Rest Support
+[![Build Status](https://travis-ci.org/yonatanhakatan/angular-rest-support.svg?branch=master)](https://travis-ci.org/yonatanhakatan/angular-rest-support) [![Coverage Status](https://coveralls.io/repos/yonatanhakatan/angular-rest-support/badge.svg?branch=master&service=github)](https://coveralls.io/github/yonatanhakatan/angular-rest-support?branch=master)   
+
 Angular Rest Support is an AngularJS service that makes interacting with RESTful API's a bit friendlier. Built on Angular's $http service, it provides a very easy way to transform requests and responses.
 
 ## Dependencies
