@@ -96,7 +96,7 @@ There are some transformer methods which are suited to being called in your app'
 ####setDefaultErrorResponseTransformer(defaultErrorResponseTransformer)
 ___
 #####Description
-Sets the default error response transformer for all requests. See the Transformers section for more.
+Sets the default error response transformer for all requests. See the [Transformers](#user-content-transformers) section for more.
 #####Parameters
 Param  | Type                | Description | Required
 ------ | ------------------- | ------------ | ------------
