@@ -298,7 +298,7 @@ One of the benefits of using transformers is you can decouple the structure of y
 
 Your transformer can be a Service or a Factory, there is just one rule, it **must** contain a method named **transform**. The transform method will receive the raw data as an argument, which will be the request data in the case of request transformers or the response data from the api in the case of response and error response transformers.
 
-#####Example:
+#####Example 1 (Response Transformers):
 
 If your API is returning this:
 ```json
@@ -314,7 +314,7 @@ If your API is returning this:
 }
 ```
 
-Then your response transformer could look like this:
+Your response transformer could look like this:
 
 ```javascript
 angular
@@ -323,6 +323,7 @@ angular
     this.transform = transform;
 
     function transform(rawData) {
+      // rawData is the whole response object that is being returned from the API
       var rawItem = rawData.data;
       return {
         id: rawItem.id,
@@ -333,4 +334,66 @@ angular
 
   });
     
+```
+
+You can then set the transformer in your request:
+
+```javascript
+ars
+  .get("books")
+  .setResponseTransformer(yourTransformer)
+  .request()
+  .then(function(success) { 
+    var bookTitle = success.data.title;
+  });
+```
+
+#####Example 2 (Request Transformers):
+
+If your API is expecting to receive data in this format:
+```json
+{
+  "data": {
+    "type": "books",
+    "attributes": {
+        "title": "Book Name",
+        "page_count": some_number
+    }
+  }
+}
+```
+
+Your request transformer could look like this:
+
+```javascript
+angular
+  .module('yourApplication')
+  .service('yourTransformer', function() {
+    this.transform = transform;
+
+    function transform(rawData) {
+      // rawData is the request data that you want to send to the API
+      var request = {
+        "data": {
+          "type": "books",
+          "attributes": {
+            "title": rawData.title,
+            "page_count": rawData.pageCount
+          }
+        }
+      };
+      return request;
+    }
+
+  });
+    
+```
+
+You can then set the transformer in your request:
+
+```javascript
+ars
+  .post("books", { title: "Book 2", pageCount: 300  })
+  .setRequestTransformer(yourTransformer)
+  .request();
 ```
