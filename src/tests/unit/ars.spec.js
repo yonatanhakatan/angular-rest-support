@@ -1,6 +1,6 @@
 describe('Angular Rest Support', function() {
   var $cacheFactory, $httpBackend;
-  var arsHelper, arsHelperProvider;
+  var ars, arsProvider;
   var baseUrl1 = '';
   var baseUrl2 = 'http://domain1.com';
   var baseUrl3 = 'http://domain2.com';
@@ -11,14 +11,14 @@ describe('Angular Rest Support', function() {
   var requestData = {name: 'John Doe', dob: '1982-01-01'};
 
   beforeEach(function() {
-    module('ars', function(_arsHelperProvider_) {
-      arsHelperProvider = _arsHelperProvider_;
+    module('ars', function(_arsProvider_) {
+      arsProvider = _arsProvider_;
     });
 
-    inject(function(_$cacheFactory_, _$httpBackend_, _arsHelper_) {
+    inject(function(_$cacheFactory_, _$httpBackend_, _ars_) {
       $cacheFactory = _$cacheFactory_;
       $httpBackend = _$httpBackend_;
-      arsHelper = _arsHelper_;
+      ars = _ars_;
     });
 
     // Mock the Data
@@ -100,7 +100,7 @@ describe('Angular Rest Support', function() {
           if (httpMethod != 'get' && httpMethod != 'delete') {
             args.push(requestData);
           }
-          httpRequest = arsHelper[httpMethod]
+          httpRequest = ars[httpMethod]
             .apply(null, args)
             .request();
         });
@@ -150,7 +150,7 @@ describe('Angular Rest Support', function() {
         var request;
 
         beforeEach(function() {
-          request = arsHelper[httpMethod]('/badurl').request();
+          request = ars[httpMethod]('/badurl').request();
         });
 
         it('Should return the correct http status code', function() {
@@ -170,9 +170,9 @@ describe('Angular Rest Support', function() {
     var postRequest;
 
     beforeEach(function() {
-      arsHelper.setDefaultRequestTransformer(dataBuilder.authorsDefaultRequestTransformer);
+      ars.setDefaultRequestTransformer(dataBuilder.authorsDefaultRequestTransformer);
       spyOn(dataBuilder.authorsDefaultRequestTransformer, 'transform').and.callThrough();
-      postRequest = arsHelper
+      postRequest = ars
         .post('/authors', requestData)
         .request();
     });
@@ -209,9 +209,9 @@ describe('Angular Rest Support', function() {
 
     beforeEach(function() {
       // Testing with the default transformer set too
-      arsHelper.setDefaultRequestTransformer(dataBuilder.authorsDefaultRequestTransformer);
+      ars.setDefaultRequestTransformer(dataBuilder.authorsDefaultRequestTransformer);
       spyOn(dataBuilder.authorsRequestTransformer, 'transform').and.callThrough();
-      postRequest = arsHelper
+      postRequest = ars
         .post('/authors', requestData)
         .setRequestTransformer(dataBuilder.authorsRequestTransformer)
         .request();
@@ -243,7 +243,7 @@ describe('Angular Rest Support', function() {
 
       returnedData = null;
 
-      arsHelper
+      ars
         .post('/authors', requestData)
         .request()
         .then(function(success) {
@@ -260,9 +260,9 @@ describe('Angular Rest Support', function() {
     var getRequest;
 
     beforeEach(function() {
-      arsHelper.setDefaultResponseTransformer(dataBuilder.authorsDefaultResponseTransformer);
+      ars.setDefaultResponseTransformer(dataBuilder.authorsDefaultResponseTransformer);
       spyOn(dataBuilder.authorsDefaultResponseTransformer, 'transform').and.callThrough();
-      getRequest = arsHelper
+      getRequest = ars
         .get('/authors')
         .request();
     });
@@ -302,9 +302,9 @@ describe('Angular Rest Support', function() {
 
     beforeEach(function() {
       // Testing with the default transformer set too
-      arsHelper.setDefaultResponseTransformer(dataBuilder.authorsDefaultResponseTransformer);
+      ars.setDefaultResponseTransformer(dataBuilder.authorsDefaultResponseTransformer);
       spyOn(dataBuilder.authorsResponseTransformer, 'transform').and.callThrough();
-      getRequest = arsHelper
+      getRequest = ars
         .get('/authors')
         .setResponseTransformer(dataBuilder.authorsResponseTransformer)
         .request();
@@ -339,7 +339,7 @@ describe('Angular Rest Support', function() {
 
       returnedData = null;
 
-      arsHelper
+      ars
         .get('/authors')
         .request()
         .then(function(success) {
@@ -359,9 +359,9 @@ describe('Angular Rest Support', function() {
     var postRequest;
 
     beforeEach(function() {
-      arsHelper.setDefaultErrorResponseTransformer(dataBuilder.authorsDefaultErrorTransformer);
+      ars.setDefaultErrorResponseTransformer(dataBuilder.authorsDefaultErrorTransformer);
       spyOn(dataBuilder.authorsDefaultErrorTransformer, 'transform').and.callThrough();
-      postRequest = arsHelper
+      postRequest = ars
         .post('/authors/failedvalidation', requestData)
         .request();
     });
@@ -400,9 +400,9 @@ describe('Angular Rest Support', function() {
 
     beforeEach(function() {
       // Testing with the default transformer set too
-      arsHelper.setDefaultErrorResponseTransformer(dataBuilder.authorsDefaultErrorTransformer);
+      ars.setDefaultErrorResponseTransformer(dataBuilder.authorsDefaultErrorTransformer);
       spyOn(dataBuilder.authorsErrorTransformer, 'transform').and.callThrough();
-      postRequest = arsHelper
+      postRequest = ars
         .post('/authors/failedvalidation', requestData)
         .setErrorResponseTransformer(dataBuilder.authorsErrorTransformer)
         .request();
@@ -437,7 +437,7 @@ describe('Angular Rest Support', function() {
 
       errorData = null;
 
-      arsHelper
+      ars
         .post('/authors/failedvalidation', requestData)
         .request()
         .then(function(success) {}, function(fail) {
@@ -456,12 +456,12 @@ describe('Angular Rest Support', function() {
   describe('After the default header is set', function() {
 
     beforeEach(function() {
-      arsHelperProvider.setDefaultHeaders(headersData1);
+      arsProvider.setDefaultHeaders(headersData1);
     });
 
     it('The correct data should be returned', function() {
       var returnedData;
-      arsHelper
+      ars
         .get('/authors/private')
         .request()
         .then(function(success) {
@@ -474,7 +474,7 @@ describe('Angular Rest Support', function() {
     describe('After the header is set for an individual request', function() {
       it('The correct data should be returned but future requests should revert', function() {
         var returnedData;
-        arsHelper
+        ars
           .get('/authors/private')
           .setHeaders(headersData2)
           .request()
@@ -485,7 +485,7 @@ describe('Angular Rest Support', function() {
         expect(returnedData).toEqual(JSON.parse(dataBuilder.allBooks));
 
         returnedData = null;
-        arsHelper
+        ars
           .get('/authors/private')
           .request()
           .then(function(success) {
@@ -501,7 +501,7 @@ describe('Angular Rest Support', function() {
     var defaultCache, getRequest;
 
     beforeEach(function() {
-      getRequest = arsHelper
+      getRequest = ars
         .get('/authors')
         .setCache(true)
         .request();
@@ -520,7 +520,7 @@ describe('Angular Rest Support', function() {
   describe('Before the default base url is set', function() {
 
     it('The correct fallback base url should be set', function() {
-      expect(arsHelperProvider.getDefaultBaseUrl()).toEqual('');
+      expect(arsProvider.getDefaultBaseUrl()).toEqual('');
     });
 
   });
@@ -528,16 +528,16 @@ describe('Angular Rest Support', function() {
   describe('After the default base url is set', function() {
 
     beforeEach(function() {
-      arsHelperProvider.setDefaultBaseUrl(baseUrl2);
+      arsProvider.setDefaultBaseUrl(baseUrl2);
     });
 
     it('The correct default base url should be set', function() {
-      expect(arsHelperProvider.getDefaultBaseUrl()).toEqual(baseUrl2);
+      expect(arsProvider.getDefaultBaseUrl()).toEqual(baseUrl2);
     });
 
     it('The correct data should be returned', function() {
       var returnedData;
-      arsHelper
+      ars
         .get('/test')
         .request()
         .then(function(success) {
@@ -550,7 +550,7 @@ describe('Angular Rest Support', function() {
     describe('After the base url is set for an individual request', function() {
       it('The correct data should be returned but future requests should revert', function() {
         var returnedData;
-        arsHelper
+        ars
           .get('/test')
           .setBaseUrl(baseUrl3)
           .request()
@@ -561,7 +561,7 @@ describe('Angular Rest Support', function() {
         expect(returnedData).toEqual(JSON.parse(dataBuilder.allBooks));
 
         returnedData = null;
-        arsHelper
+        ars
           .get('/test')
           .request()
           .then(function(success) {

@@ -24,13 +24,13 @@ angular
 ## Usage
 
 ### Config Phase
-Angular Rest Support has certain methods that can be only be called at the config phase of the Angular lifecycle. To use these methods, inject the `arsHelperProvider` into your config:
+Angular Rest Support has certain methods that can be only be called at the config phase of the Angular lifecycle. To use these methods, inject the `arsProvider` into your config:
 
 ```javascript
 angular
   .module('yourApplication')
-  .config(['arsHelperProvider', function(arsHelperProvider) {
-    // arsHelperProvider method calls here
+  .config(['arsProvider', function(arsProvider) {
+    // arsProvider method calls here
   }]);
 ```
 
@@ -47,7 +47,7 @@ baseUrl| string | The base url to set | yes
 undefined
 #####Example
 ```javascript
-arsHelperProvider.setDefaultBaseUrl("http://abc.com/");
+arsProvider.setDefaultBaseUrl("http://abc.com/");
 ```
 ####getDefaultBaseUrl()
 ___
@@ -59,7 +59,7 @@ none
 The base url (string)
 #####Example
 ```javascript
-arsHelperProvider.getDefaultBaseUrl();
+arsProvider.getDefaultBaseUrl();
 ```
 
 ####setDefaultHeaders(headers, httpMethod)
@@ -76,18 +76,18 @@ undefined
 #####Example
 ```javascript
 // Header will be sent for all requests
-arsHelperProvider.setDefaultHeaders({ 'Authorization': 'Bearer 1a2b3c4d5e' });
+arsProvider.setDefaultHeaders({ 'Authorization': 'Bearer 1a2b3c4d5e' });
 // Header will be sent only for POST requests
-arsHelperProvider.setDefaultHeaders({ 'Authorization': 'Bearer 1a2b3c4d5e' }, 'post');
+arsProvider.setDefaultHeaders({ 'Authorization': 'Bearer 1a2b3c4d5e' }, 'post');
 ```
 ### Run Phase
-Angular Rest Support also has certain methods that can be only be called at the run phase of the Angular lifecycle. To use these methods, inject the `arsHelper` factory into your controller/service/factory/run:
+Angular Rest Support also has certain methods that can be only be called at the run phase of the Angular lifecycle. To use these methods, inject the `ars` factory into your controller/service/factory/run:
 
 ```javascript
 angular
   .module('yourapplication')
-  .controller('yourController', ['arsHelper', function(arsHelper) {
-    // arsHelper method calls here
+  .controller('yourController', ['ars', function(ars) {
+    // ars method calls here
   }]);
 ```
 
@@ -105,7 +105,7 @@ defaultErrorResponseTransformer| Object | The error transformer to use for all e
 The Angular Rest Support factory (Object)
 #####Example
 ```javascript
-arsHelper.setDefaultErrorResponseTransformer(yourErrorTransformer);
+ars.setDefaultErrorResponseTransformer(yourErrorTransformer);
 ```
 
 ####setDefaultRequestTransformer(defaultRequestTransformer)
@@ -120,7 +120,7 @@ defaultRequestTransformer| Object | The request transformer to use for all reque
 The Angular Rest Support factory (Object)
 #####Example
 ```javascript
-arsHelper.setDefaultRequestTransformer(yourRequestTransformer);
+ars.setDefaultRequestTransformer(yourRequestTransformer);
 ```
 
 ####setDefaultResponseTransformer(defaultResponseTransformer)
@@ -135,7 +135,7 @@ defaultResponseTransformer| Object | The response transformer to use for all res
 The Angular Rest Support factory (Object)
 #####Example
 ```javascript
-arsHelper.setDefaultResponseTransformer(yourResponseTransformer);
+ars.setDefaultResponseTransformer(yourResponseTransformer);
 ```
 
 ###Preparing requests
@@ -160,9 +160,9 @@ An Angular Rest Support request (Object)
 #####Example
 ```javascript
 // Without request data
-arsHelper.get("books")
+ars.get("books")
 // With request data
-arsHelper.post("books", { type: 'hardback' })
+ars.post("books", { type: 'hardback' })
 ```
 ### Post-Prep
 Once you have prepared the request, you can call any of these methods:
@@ -179,7 +179,7 @@ baseUrl| string | The base url to set for the request | yes
 An Angular Rest Support request (Object)
 #####Example
 ```javascript
-arsHelper
+ars
   .get("books")
   .setBaseUrl("http://xyz.com/");
 ```
@@ -196,7 +196,7 @@ cache| boolean or $cacheFactory Object | If true, a default $http cache will be 
 An Angular Rest Support request (Object)
 #####Example
 ```javascript
-arsHelper
+ars
   .get("books")
   .setCache(true);
 ```
@@ -213,7 +213,7 @@ headers| Object | The headers to send for the request, in the format:<br>```{ 'h
 An Angular Rest Support request (Object)
 #####Example
 ```javascript
-arsHelper
+ars
   .get("books")
   .setHeaders({ 'Content-Type': 'application/vnd.api+json' });
 ```
@@ -230,7 +230,7 @@ errorResponseTransformer| Object | The error transformer to use for any errors t
 An Angular Rest Support request (Object)
 #####Example
 ```javascript
-arsHelper
+ars
   .get("books")
   .setErrorResponseTransformer(yourErrorTransformer);
 ```
@@ -247,7 +247,7 @@ requestTransformer| Object | The request transformer to use for any request data
 An Angular Rest Support request (Object)
 #####Example
 ```javascript
-arsHelper
+ars
   .post("books", { type: 'hardback' })
   .setRequestTransformer(yourRequestTransformer);
 ```
@@ -264,7 +264,7 @@ responseTransformer| Object | The response transformer to use for any response d
 An Angular Rest Support request (Object)
 #####Example
 ```javascript
-arsHelper
+ars
   .get("books")
   .setResponseTransformer(yourResponseTransformer);
 ```
@@ -281,7 +281,7 @@ none
 A Promise (Object)
 #####Example
 ```javascript
-arsHelper
+ars
   .get("books")
   .request()
   .then(function(success) {

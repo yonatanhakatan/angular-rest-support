@@ -3,15 +3,15 @@
 
   angular
     .module('ars')
-    .provider('arsHelper', arsHelperProvider);
+    .provider('ars', arsProvider);
 
-  arsHelperProvider.$inject = ['$httpProvider'];
+  arsProvider.$inject = ['$httpProvider'];
 
   /**
-   * An API Helper that allows you to make
-   * requests to REST API's.
+   * The provider that is run at the config phase
+   * of Angular lifecycle.
    */
-  function arsHelperProvider($httpProvider) {
+  function arsProvider($httpProvider) {
     /* jshint validthis:true */
 
     var providerConfig = {
@@ -21,20 +21,20 @@
       defaultResponseTransformer: null
     };
 
-    this.$get = apiHelperFactory;
+    this.$get = arsFactory;
     this.getDefaultBaseUrl = getDefaultBaseUrl;
     this.setDefaultBaseUrl = setDefaultBaseUrl;
     this.setDefaultHeaders = setDefaultHeaders;
 
-    apiHelperFactory.$inject = ['$http'];
+    arsFactory.$inject = ['$http'];
 
     /**
-     * Helper factory which is run at run stage
+     * Factory which is run at run phase
      * of Angular lifecycle.
      * @param  {Object} $http Injected $http object
      * @return {Object} The factory object
      */
-    function apiHelperFactory($http) {
+    function arsFactory($http) {
       var factory = {
         delete: prepareDeleteRequest,
         get: prepareGetRequest,
@@ -306,7 +306,7 @@
     }
 
     /**
-     * Get the default base url for the API Helper
+     * Get the default base url currently set
      * @return {string} The base url
      */
     function getDefaultBaseUrl() {
@@ -314,7 +314,7 @@
     }
 
     /**
-     * Sets the default base url for the API Helper
+     * Sets the default base url to be used for all requests
      * @param {string} baseUrl The base url
      */
     function setDefaultBaseUrl(baseUrl) {
